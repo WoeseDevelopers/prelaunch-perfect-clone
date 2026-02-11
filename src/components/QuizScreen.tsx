@@ -66,20 +66,17 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         {/* Card */}
         <div
           key={question.id}
-          className="mt-8 rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-fade-in-up"
+          className="mt-8 rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-fade-in-up flex flex-col"
+          style={{ aspectRatio: '1 / 2' }}
         >
-          {/* Pergunta header */}
-          <div className="pt-5 px-5">
+          {/* Question area - fills remaining space and centers content */}
+          <div className="flex-1 flex flex-col items-center justify-center px-5 py-6">
             <p
-              className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-4"
+              className="text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-6"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               Pergunta
             </p>
-          </div>
-
-          {/* Question text */}
-          <div className="px-5 pb-6 min-h-[120px] flex items-center justify-center">
             <h2
               className="text-lg font-bold leading-snug text-foreground text-center"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
@@ -116,9 +113,8 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             </button>
           </div>
 
-          {/* Type labels below buttons - side by side matching SIM/NÃO */}
+          {/* Type labels */}
           <div className="flex bg-card">
-            {/* SIM type */}
             <div className="flex-1 flex flex-col items-center gap-2 py-5 border-r border-border/50">
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
@@ -133,8 +129,6 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 {yesProfile.name}
               </span>
             </div>
-
-            {/* NÃO type */}
             <div className="flex-1 flex flex-col items-center gap-2 py-5">
               <div
                 className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"

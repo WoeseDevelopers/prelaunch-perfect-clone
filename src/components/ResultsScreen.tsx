@@ -167,16 +167,16 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                         </span>
                       )}
                     </div>
-                    <div className="ml-auto flex items-center gap-4 shrink-0">
-                      <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-600">
-                        <IconCheck className="h-4 w-4" />{sim[type]}
+                    <div className="ml-auto flex items-center gap-2 shrink-0">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-sm font-bold text-white">
+                        <IconCheck className="h-4 w-4" />{String(sim[type]).padStart(2, '0')}
                       </span>
-                      <span className="inline-flex items-center gap-1 text-sm font-bold text-red-500">
-                        <IconX className="h-4 w-4" />{nao[type]}
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-1 text-sm font-bold text-white">
+                        <IconX className="h-4 w-4" />{String(nao[type]).padStart(2, '0')}
                       </span>
-                      <span className="text-xl font-extrabold" style={{ color: profile.color }}>
-                        {score}
-                        <span className="text-xs font-medium text-muted-foreground">/{maxScore}</span>
+                      <span className="inline-flex items-center rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
+                        {String(score).padStart(2, '0')}
+                        <span className="font-medium text-muted-foreground ml-0.5">/{maxScore}</span>
                       </span>
                     </div>
                   </div>

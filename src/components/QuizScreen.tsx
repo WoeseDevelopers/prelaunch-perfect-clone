@@ -72,7 +72,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           {/* Inner card */}
           <div
             className="rounded-2xl border border-border overflow-hidden flex flex-col bg-card"
-            style={{ aspectRatio: '1 / 2' }}
+            style={{ height: '600px' }}
           >
             {/* Question area */}
             <div className="flex-1 flex flex-col items-center justify-center px-5 py-6">
@@ -83,8 +83,8 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 Pergunta
               </p>
               <h2
-                className="text-lg font-bold leading-snug text-foreground text-center"
-                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                className="font-bold leading-snug text-foreground text-center"
+                style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem' }}
               >
                 {question.text}
               </h2>

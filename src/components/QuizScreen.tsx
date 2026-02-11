@@ -98,14 +98,13 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
               </h2>
             </div>
 
-            {/* SIM + NÃO - tarjas primeiro, tipos revelados após escolha */}
+            {/* Tarjas SIM/NÃO estáticas */}
             <div className="flex gap-[2px]">
-              {/* SIM column */}
               <button
                 onClick={() => !revealed && handleAnswer('yes')}
                 disabled={revealed}
                 className={cn(
-                  "flex-1 flex flex-col transition-all cursor-pointer",
+                  "flex-1 cursor-pointer transition-opacity",
                   selectedValue === 'yes' ? "opacity-90" : "hover:opacity-90"
                 )}
               >
@@ -118,33 +117,12 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 >
                   SIM
                 </div>
-                <div
-                  className={cn(
-                    "flex flex-col items-center gap-2 bg-card w-full border-r border-border/50 overflow-hidden transition-all duration-500 ease-in-out",
-                    revealed ? "max-h-40 py-5 opacity-100" : "max-h-0 py-0 opacity-0"
-                  )}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: yesProfile.color }}
-                  >
-                    <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
-                  </div>
-                  <span
-                    className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                  >
-                    {yesProfile.name}
-                  </span>
-                </div>
               </button>
-
-              {/* NÃO column */}
               <button
                 onClick={() => !revealed && handleAnswer('no')}
                 disabled={revealed}
                 className={cn(
-                  "flex-1 flex flex-col transition-all cursor-pointer",
+                  "flex-1 cursor-pointer transition-opacity",
                   selectedValue === 'no' ? "opacity-90" : "hover:opacity-90"
                 )}
               >
@@ -157,26 +135,44 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 >
                   NÃO
                 </div>
-                <div
-                  className={cn(
-                    "flex flex-col items-center gap-2 bg-card w-full overflow-hidden transition-all duration-500 ease-in-out",
-                    revealed ? "max-h-40 py-5 opacity-100" : "max-h-0 py-0 opacity-0"
-                  )}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: noProfile.color }}
-                  >
-                    <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
-                  </div>
-                  <span
-                    className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                  >
-                    {noProfile.name}
-                  </span>
-                </div>
               </button>
+            </div>
+
+            {/* Tipos colapsáveis abaixo das tarjas */}
+            <div
+              className={cn(
+                "flex gap-[2px] overflow-hidden transition-all duration-500 ease-in-out",
+                revealed ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+              )}
+            >
+              <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card border-r border-border/50">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: yesProfile.color }}
+                >
+                  <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
+                </div>
+                <span
+                  className="text-xs font-extrabold uppercase tracking-wide"
+                  style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                >
+                  {yesProfile.name}
+                </span>
+              </div>
+              <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card">
+                <div
+                  className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: noProfile.color }}
+                >
+                  <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
+                </div>
+                <span
+                  className="text-xs font-extrabold uppercase tracking-wide"
+                  style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                >
+                  {noProfile.name}
+                </span>
+              </div>
             </div>
           </div>
         </div>

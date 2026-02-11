@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { IconSparkles } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -20,7 +20,7 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
         <Card className="animate-fade-in-up-delay rounded-2xl border border-border/50 shadow-lg">
           <CardContent className="p-8 space-y-5">
             <div className="flex items-center justify-center gap-2">
-              <Sparkles className="h-5 w-5 text-[hsl(var(--trampos-purple))]" />
+              <IconSparkles className="h-5 w-5 text-[hsl(var(--trampos-purple))]" />
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Teste Vocacional
               </span>

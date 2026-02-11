@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Check, X } from "lucide-react";
+import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { questions, riasecProfiles, antagonisms } from "@/data/quizQuestions";
 import { cn } from "@/lib/utils";
@@ -51,7 +51,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             onClick={handlePrev}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <IconArrowLeft className="h-4 w-4" />
             Voltar
           </button>
           <span className="text-sm font-medium text-muted-foreground">

@@ -75,8 +75,8 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         >
           {/* Inner card */}
           <div
-            className="rounded-2xl border border-border overflow-hidden flex flex-col bg-card"
-            style={{ height: '600px' }}
+            className="rounded-2xl border border-border overflow-hidden flex flex-col bg-card transition-all duration-500 ease-in-out"
+            style={{ minHeight: '500px' }}
           >
             {/* "Pergunta" fixed at top */}
             <div className="pt-5 px-5">

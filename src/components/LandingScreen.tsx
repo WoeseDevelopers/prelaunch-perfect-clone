@@ -1,4 +1,4 @@
-import { IconSparkles } from "@tabler/icons-react";
+import { IconSparkles, IconRocket } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -35,7 +35,7 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
               onClick={onStart}
               className="w-full rounded-full bg-[hsl(var(--trampos-purple))] text-lg font-semibold text-white transition-transform hover:scale-105 hover:bg-[hsl(var(--trampos-purple))]/90 h-12"
             >
-              Começar 🚀
+              Começar <IconRocket className="inline h-5 w-5 ml-1" />
             </Button>
 
             <p className="text-xs text-muted-foreground">

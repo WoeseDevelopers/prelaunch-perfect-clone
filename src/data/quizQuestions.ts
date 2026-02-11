@@ -59,7 +59,7 @@ export const antagonisms: Record<RiasecType, RiasecType> = {
 export interface RiasecProfile {
   type: RiasecType;
   name: string;
-  emoji: string;
+  icon: string;
   description: string;
   careers: string[];
   color: string;
@@ -69,7 +69,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
   R: {
     type: 'R',
     name: 'Realista',
-    emoji: '🔧',
+    icon: 'IconTool',
     description: 'Você é prático, objetivo e gosta de trabalhar com as mãos. Prefere atividades concretas e tangíveis, resolver problemas reais e ver resultados imediatos do seu trabalho.',
     careers: ['Engenharia', 'Mecânica', 'Agricultura', 'Construção Civil', 'Eletricista'],
     color: 'hsl(142, 71%, 45%)',
@@ -77,7 +77,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
   I: {
     type: 'I',
     name: 'Investigativo',
-    emoji: '🔬',
+    icon: 'IconMicroscope',
     description: 'Você é curioso, analítico e adora entender como as coisas funcionam. Gosta de pesquisar, estudar e resolver problemas complexos usando lógica e raciocínio.',
     careers: ['Ciência', 'Pesquisa', 'Medicina', 'Tecnologia', 'Análise de Dados'],
     color: 'hsl(217, 91%, 60%)',
@@ -85,7 +85,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
   A: {
     type: 'A',
     name: 'Artístico',
-    emoji: '🎨',
+    icon: 'IconPalette',
     description: 'Você é criativo, expressivo e valoriza a originalidade. Gosta de ambientes livres onde pode usar sua imaginação e criar coisas novas.',
     careers: ['Design', 'Música', 'Escrita', 'Artes Visuais', 'Publicidade'],
     color: 'hsl(262, 83%, 58%)',
@@ -93,7 +93,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
   S: {
     type: 'S',
     name: 'Social',
-    emoji: '🤝',
+    icon: 'IconUsersGroup',
     description: 'Você é empático, cooperativo e gosta de ajudar os outros. Se realiza em atividades que envolvem ensinar, orientar e cuidar das pessoas.',
     careers: ['Educação', 'Psicologia', 'Serviço Social', 'Saúde', 'RH'],
     color: 'hsl(330, 81%, 60%)',
@@ -101,7 +101,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
   E: {
     type: 'E',
     name: 'Empreendedor',
-    emoji: '🚀',
+    icon: 'IconRocket',
     description: 'Você é líder, persuasivo e motivado por desafios. Gosta de influenciar pessoas, tomar decisões e buscar resultados ambiciosos.',
     careers: ['Administração', 'Vendas', 'Marketing', 'Direito', 'Gestão'],
     color: 'hsl(25, 95%, 53%)',
@@ -109,7 +109,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
   C: {
     type: 'C',
     name: 'Convencional',
-    emoji: '📊',
+    icon: 'IconChartBar',
     description: 'Você é organizado, metódico e detalhista. Gosta de seguir processos, trabalhar com dados e manter tudo em ordem.',
     careers: ['Contabilidade', 'Finanças', 'Administração', 'Logística', 'Auditoria'],
     color: 'hsl(47, 96%, 53%)',

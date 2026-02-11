@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { questions, riasecProfiles, antagonisms, type RiasecType } from "@/data/quizQuestions";
+import RiasecIcon from "@/components/RiasecIcon";
 
 interface ResultsScreenProps {
   answers: Record<number, 'yes' | 'no'>;
@@ -46,7 +47,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const dominantProfile = riasecProfiles[dominantType];
 
   const handleShare = async () => {
-    const text = `Meu perfil RIASEC dominante é ${dominantProfile.emoji} ${dominantProfile.name}! Faça o teste vocacional Trampos Game e descubra o seu.`;
+    const text = `Meu perfil RIASEC dominante é ${dominantProfile.name}! Faça o teste vocacional Trampos Game e descubra o seu.`;
     if (navigator.share) {
       await navigator.share({ title: "Trampos Game - Resultado", text });
     } else {
@@ -64,7 +65,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
             Seu Resultado
           </p>
           <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="text-4xl">{dominantProfile.emoji}</span>
+            <RiasecIcon name={dominantProfile.icon} size={36} className="text-foreground" />
             <h2 className="text-4xl font-extrabold text-foreground">
               {dominantProfile.name}
             </h2>
@@ -122,7 +123,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                   {/* Title row */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-lg">{profile.emoji}</span>
+                      <RiasecIcon name={profile.icon} size={20} className="text-foreground" />
                       <span className="text-lg font-bold text-foreground">
                         {profile.name}
                       </span>

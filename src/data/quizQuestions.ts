@@ -38,13 +38,15 @@ export const questions: Question[] = [
   { id: 18, text: "Me sinto confortável trabalhando com números, planilhas e dados.", type: 'C' },
 ];
 
-export const answerOptions = [
-  { value: 1, label: "Não curto" },
-  { value: 2, label: "Curto pouco" },
-  { value: 3, label: "Tanto faz" },
-  { value: 4, label: "Curto" },
-  { value: 5, label: "Curto muito" },
-];
+// Antagonismos RIASEC: R×I, A×C, S×E
+export const antagonisms: Record<RiasecType, RiasecType> = {
+  R: 'I',
+  I: 'R',
+  A: 'C',
+  C: 'A',
+  S: 'E',
+  E: 'S',
+};
 
 export interface RiasecProfile {
   type: RiasecType;

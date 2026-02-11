@@ -9,24 +9,29 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { questions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
+import { questions, riasecProfiles, antagonisms, type RiasecType } from "@/data/quizQuestions";
 
 interface ResultsScreenProps {
-  answers: Record<number, number>;
+  answers: Record<number, 'yes' | 'no'>;
   onRestart: () => void;
 }
 
-function calculateScores(answers: Record<number, number>) {
+function calculateScores(answers: Record<number, 'yes' | 'no'>) {
   const scores: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   questions.forEach((q) => {
-    scores[q.type] += answers[q.id] || 0;
+    const answer = answers[q.id];
+    if (answer === 'yes') {
+      scores[q.type] += 1;
+    } else if (answer === 'no') {
+      scores[antagonisms[q.type]] += 1;
+    }
   });
   return scores;
 }
 
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
-  const maxScore = 15;
+  const maxScore = 18; // each question awards 1 point to either the type or its antagonist
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({
     subject: riasecProfiles[type].name,

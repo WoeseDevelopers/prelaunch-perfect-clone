@@ -44,8 +44,8 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-4">
-      <div className="w-full max-w-lg mx-auto">
+    <div className="min-h-screen px-4 py-4 flex flex-col items-center">
+      <div className="w-full max-w-[340px]">
         {/* Header with back + counter */}
         <div className="flex items-center justify-between mb-2 animate-fade-in-up">
           <button
@@ -69,9 +69,9 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           className="mt-8 rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-fade-in-up"
         >
           {/* Pergunta header */}
-          <div className="pt-6 px-6">
+          <div className="pt-5 px-5">
             <p
-              className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-6"
+              className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-4"
               style={{ fontFamily: "'Syne', sans-serif" }}
             >
               Pergunta
@@ -79,9 +79,9 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           </div>
 
           {/* Question text */}
-          <div className="px-6 pb-8 min-h-[140px] flex items-start">
+          <div className="px-5 pb-6 min-h-[120px] flex items-center justify-center">
             <h2
-              className="text-xl md:text-2xl font-bold leading-tight text-foreground"
+              className="text-lg font-bold leading-snug text-foreground text-center"
               style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
             >
               {question.text}

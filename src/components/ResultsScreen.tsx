@@ -125,179 +125,140 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
           </CardContent>
         </Card>
 
-        {/* Statistics Table */}
-        <Card className="animate-fade-in-up-delay rounded-2xl border border-border/50 shadow-sm">
-          <CardContent className="p-5 space-y-3">
-            <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">
-              Estatística de Escolhas
-            </h3>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="py-2 text-left font-semibold text-muted-foreground">Tipo</th>
-                    <th className="py-2 text-center font-semibold text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <IconCheck className="h-7 w-7 text-emerald-500" />
-                        SIM
-                      </span>
-                    </th>
-                    <th className="py-2 text-center font-semibold text-muted-foreground">
-                      <span className="inline-flex items-center gap-1">
-                        <IconX className="h-7 w-7 text-red-500" />
-                        NÃO
-                      </span>
-                    </th>
-                    <th className="py-2 text-center font-semibold text-muted-foreground">Pontos</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sorted.map(([type, score]) => {
-                    const profile = riasecProfiles[type];
-                    const isDominant = type === dominantType;
-                    const active = activatedLabels[type];
-                    return (
-                      <React.Fragment key={type}>
-                        <tr
-                          className={`border-b border-border/50 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}
-                        >
-                          <td className="py-2.5">
-                            <div className="flex items-center gap-2">
-                              <div
-                                className="w-14 h-14 rounded-full flex items-center justify-center"
-                                style={{ backgroundColor: profile.color }}
-                              >
-                                <RiasecIcon name={profile.icon} size={28} className="text-white" />
-                              </div>
-                              <span className={`font-semibold ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
-                                {profile.name}
-                              </span>
-                              {isDominant && (
-                                <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-bold text-white">
-                                  TOP
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-2.5 text-center font-bold text-emerald-600">{sim[type]}</td>
-                          <td className="py-2.5 text-center font-bold text-red-500">{nao[type]}</td>
-                          <td className="py-2.5 text-center">
-                            <span className="font-extrabold text-lg" style={{ color: profile.color }}>
-                              {score}
-                            </span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td colSpan={4} className="pb-3 pt-1 px-2">
-                            <div className="flex flex-wrap gap-1.5">
-                              {profile.subdivisions.map((sub) => {
-                                const isActive = active.includes(sub);
-                                return (
-                                  <span
-                                    key={sub}
-                                    className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide transition-all"
-                                    style={{
-                                      backgroundColor: isActive ? profile.color : 'transparent',
-                                      color: isActive ? '#fff' : profile.color,
-                                      border: `1.5px solid ${profile.color}`,
-                                      opacity: isActive ? 1 : 0.35,
-                                    }}
-                                  >
-                                    {sub}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </td>
-                        </tr>
-                      </React.Fragment>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 border-border">
-                    <td className="py-2.5 font-bold text-foreground">Total</td>
-                    <td className="py-2.5 text-center font-bold text-emerald-600">
-                      {Object.values(sim).reduce((a, b) => a + b, 0)}
-                    </td>
-                    <td className="py-2.5 text-center font-bold text-red-500">
-                      {Object.values(nao).reduce((a, b) => a + b, 0)}
-                    </td>
-                    <td className="py-2.5 text-center font-extrabold text-lg text-foreground">
-                      {Object.values(scores).reduce((a, b) => a + b, 0)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-
-        <div className="animate-fade-in-up-delay-2 space-y-4">
+        {/* Unified type cards */}
+        <div className="animate-fade-in-up-delay space-y-4">
           {sorted.map(([type, score]) => {
             const profile = riasecProfiles[type];
             const pct = (score / maxScore) * 100;
             const isDominant = type === dominantType;
+            const active = activatedLabels[type];
             return (
               <Card
                 key={type}
-                className={`rounded-2xl shadow-sm ${
+                className={`rounded-2xl shadow-sm overflow-hidden ${
                   isDominant
                     ? "border-2 border-[hsl(var(--trampos-purple))]"
                     : "border border-border/50"
                 }`}
               >
-                <CardContent className="p-5 space-y-3">
-                  {/* Title row */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <RiasecIcon name={profile.icon} size={40} className="text-foreground" />
-                      <span className="text-lg font-bold text-foreground">
+                <CardContent className="p-0">
+                  {/* Stats row (image 1 style) */}
+                  <div className={`flex items-center gap-3 px-4 py-3 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: profile.color }}
+                    >
+                      <RiasecIcon name={profile.icon} size={24} className="text-white" />
+                    </div>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className={`font-bold text-base ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
                         {profile.name}
                       </span>
                       {isDominant && (
-                        <span className="rounded-full border border-[hsl(var(--trampos-purple))] px-2.5 py-0.5 text-xs font-semibold text-[hsl(var(--trampos-purple))]">
-                          Destaque
+                        <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-bold text-white">
+                          TOP
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold" style={{ color: profile.color }}>
-                        {score}
-                      </span>
-                      <span className="text-sm text-muted-foreground">/{maxScore}</span>
+                    <div className="ml-auto flex items-center gap-4 shrink-0">
+                      <div className="text-center">
+                        <span className="text-[10px] text-muted-foreground font-semibold block">SIM</span>
+                        <span className="font-bold text-emerald-600">{sim[type]}</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="text-[10px] text-muted-foreground font-semibold block">NÃO</span>
+                        <span className="font-bold text-red-500">{nao[type]}</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="text-[10px] text-muted-foreground font-semibold block">PTS</span>
+                        <span className="font-extrabold text-lg" style={{ color: profile.color }}>
+                          {score}
+                        </span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Progress bar */}
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${pct}%`, backgroundColor: profile.color }}
-                    />
+                  {/* Subdivisions */}
+                  <div className="px-4 py-2.5 border-t border-border/30">
+                    <div className="flex flex-wrap gap-1.5">
+                      {profile.subdivisions.map((sub) => {
+                        const isActive = active.includes(sub);
+                        return (
+                          <span
+                            key={sub}
+                            className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+                            style={{
+                              backgroundColor: isActive ? profile.color : 'transparent',
+                              color: isActive ? '#fff' : profile.color,
+                              border: `1.5px solid ${profile.color}`,
+                              opacity: isActive ? 1 : 0.3,
+                            }}
+                          >
+                            {sub}
+                          </span>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  {/* Description */}
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {profile.description}
-                  </p>
+                  {/* Detail section (image 2 style) */}
+                  <div className="px-4 pb-4 pt-2 space-y-2.5 border-t border-border/30">
+                    {/* Progress bar */}
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${pct}%`, backgroundColor: profile.color }}
+                      />
+                    </div>
 
-                  {/* Career tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {profile.careers.map((c) => (
-                      <span
-                        key={c}
-                        className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/80"
-                      >
-                        {c}
-                      </span>
-                    ))}
+                    {/* Description */}
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {profile.description}
+                    </p>
+
+                    {/* Career tags */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {profile.careers.map((c) => (
+                        <span
+                          key={c}
+                          className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/80"
+                        >
+                          {c}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             );
           })}
+
+          {/* Totals row */}
+          <Card className="rounded-2xl border border-border/50 shadow-sm">
+            <CardContent className="px-4 py-3 flex items-center gap-3">
+              <span className="font-bold text-foreground">Total</span>
+              <div className="ml-auto flex items-center gap-4">
+                <div className="text-center">
+                  <span className="text-[10px] text-muted-foreground font-semibold block">SIM</span>
+                  <span className="font-bold text-emerald-600">
+                    {Object.values(sim).reduce((a, b) => a + b, 0)}
+                  </span>
+                </div>
+                <div className="text-center">
+                  <span className="text-[10px] text-muted-foreground font-semibold block">NÃO</span>
+                  <span className="font-bold text-red-500">
+                    {Object.values(nao).reduce((a, b) => a + b, 0)}
+                  </span>
+                </div>
+                <div className="text-center">
+                  <span className="text-[10px] text-muted-foreground font-semibold block">PTS</span>
+                  <span className="font-extrabold text-lg text-foreground">
+                    {Object.values(scores).reduce((a, b) => a + b, 0)}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Actions */}

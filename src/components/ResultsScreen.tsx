@@ -1,3 +1,4 @@
+import React from "react";
 import { IconRefresh, IconShare, IconCheck, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,11 +22,8 @@ function calculateScores(answers: Record<number, 'yes' | 'no'>) {
   const scores: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   questions.forEach((q) => {
     const answer = answers[q.id];
-    if (answer === 'yes') {
-      scores[q.yesType] += 1;
-    } else if (answer === 'no') {
-      scores[q.noType] += 1;
-    }
+    if (answer === 'yes') scores[q.yesType] += 1;
+    else if (answer === 'no') scores[q.noType] += 1;
   });
   return scores;
 }
@@ -35,18 +33,26 @@ function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
   const nao: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   questions.forEach((q) => {
     const answer = answers[q.id];
-    if (answer === 'yes') {
-      sim[q.yesType] += 1;
-    } else if (answer === 'no') {
-      nao[q.noType] += 1;
-    }
+    if (answer === 'yes') sim[q.yesType] += 1;
+    else if (answer === 'no') nao[q.noType] += 1;
   });
   return { sim, nao };
+}
+
+function getActivatedLabels(answers: Record<number, 'yes' | 'no'>) {
+  const labels: Record<RiasecType, string[]> = { R: [], I: [], A: [], S: [], E: [], C: [] };
+  questions.forEach((q) => {
+    const answer = answers[q.id];
+    if (answer === 'yes') labels[q.yesType].push(q.yesLabel);
+    else if (answer === 'no') labels[q.noType].push(q.noLabel);
+  });
+  return labels;
 }
 
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
+  const activatedLabels = getActivatedLabels(answers);
   const maxScore = 18;
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({
@@ -150,37 +156,62 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                   {sorted.map(([type, score]) => {
                     const profile = riasecProfiles[type];
                     const isDominant = type === dominantType;
+                    const active = activatedLabels[type];
                     return (
-                      <tr
-                        key={type}
-                        className={`border-b border-border/50 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}
-                      >
-                        <td className="py-2.5">
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="w-14 h-14 rounded-full flex items-center justify-center"
-                              style={{ backgroundColor: profile.color }}
-                            >
-                              <RiasecIcon name={profile.icon} size={28} className="text-white" />
-                            </div>
-                            <span className={`font-semibold ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
-                              {profile.name}
-                            </span>
-                            {isDominant && (
-                              <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-bold text-white">
-                                TOP
+                      <React.Fragment key={type}>
+                        <tr
+                          className={`border-b border-border/50 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}
+                        >
+                          <td className="py-2.5">
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-14 h-14 rounded-full flex items-center justify-center"
+                                style={{ backgroundColor: profile.color }}
+                              >
+                                <RiasecIcon name={profile.icon} size={28} className="text-white" />
+                              </div>
+                              <span className={`font-semibold ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
+                                {profile.name}
                               </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-2.5 text-center font-bold text-emerald-600">{sim[type]}</td>
-                        <td className="py-2.5 text-center font-bold text-red-500">{nao[type]}</td>
-                        <td className="py-2.5 text-center">
-                          <span className="font-extrabold text-lg" style={{ color: profile.color }}>
-                            {score}
-                          </span>
-                        </td>
-                      </tr>
+                              {isDominant && (
+                                <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-bold text-white">
+                                  TOP
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-2.5 text-center font-bold text-emerald-600">{sim[type]}</td>
+                          <td className="py-2.5 text-center font-bold text-red-500">{nao[type]}</td>
+                          <td className="py-2.5 text-center">
+                            <span className="font-extrabold text-lg" style={{ color: profile.color }}>
+                              {score}
+                            </span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colSpan={4} className="pb-3 pt-1 px-2">
+                            <div className="flex flex-wrap gap-1.5">
+                              {profile.subdivisions.map((sub) => {
+                                const isActive = active.includes(sub);
+                                return (
+                                  <span
+                                    key={sub}
+                                    className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide transition-all"
+                                    style={{
+                                      backgroundColor: isActive ? profile.color : 'transparent',
+                                      color: isActive ? '#fff' : profile.color,
+                                      border: `1.5px solid ${profile.color}`,
+                                      opacity: isActive ? 1 : 0.35,
+                                    }}
+                                  >
+                                    {sub}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </td>
+                        </tr>
+                      </React.Fragment>
                     );
                   })}
                 </tbody>

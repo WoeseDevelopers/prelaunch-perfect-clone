@@ -44,6 +44,7 @@ export interface RiasecProfile {
   description: string;
   careers: string[];
   color: string;
+  subdivisions: string[];
 }
 
 export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
@@ -54,6 +55,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é prático, objetivo e gosta de trabalhar com as mãos. Prefere atividades concretas e tangíveis, resolver problemas reais e ver resultados imediatos do seu trabalho.',
     careers: ['Engenharia', 'Mecânica', 'Agricultura', 'Construção Civil', 'Eletricista'],
     color: 'hsl(142, 71%, 45%)',
+    subdivisions: ['REALISTA', 'COISAS', 'EXECUÇÃO', 'ROTINA', 'SEGURANÇA', 'MANUTENÇÃO', 'PRODUÇÃO', 'OPERAÇÃO', 'RESISTÊNCIA', 'CONSTÂNCIA', 'FERRAMENTAS', 'ESTABILIDADE'],
   },
   I: {
     type: 'I',
@@ -62,6 +64,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é curioso, analítico e adora entender como as coisas funcionam. Gosta de pesquisar, estudar e resolver problemas complexos usando lógica e raciocínio.',
     careers: ['Ciência', 'Pesquisa', 'Medicina', 'Tecnologia', 'Análise de Dados'],
     color: 'hsl(217, 91%, 60%)',
+    subdivisions: ['ESTUDO', 'ANÁLISE', 'PLANEJAMENTO', 'PESQUISA', 'DIAGNÓSTICO', 'CURIOSIDADE', 'RACIOCÍNIO', 'RESOLUÇÕES', 'TEORIA', 'OBSERVAÇÃO'],
   },
   A: {
     type: 'A',
@@ -70,6 +73,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é criativo, expressivo e valoriza a originalidade. Gosta de ambientes livres onde pode usar sua imaginação e criar coisas novas.',
     careers: ['Design', 'Música', 'Escrita', 'Artes Visuais', 'Publicidade'],
     color: 'hsl(262, 83%, 58%)',
+    subdivisions: ['CRIATIVIDADE', 'EXPRESSÃO', 'MUDANÇA', 'IMAGINAÇÃO', 'INTUIÇÃO', 'ESTÉTICA', 'ESTILO', 'INOVAÇÃO', 'EXPERIÊNCIAS', 'IDENTIDADE'],
   },
   S: {
     type: 'S',
@@ -78,6 +82,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é empático, cooperativo e gosta de ajudar os outros. Se realiza em atividades que envolvem ensinar, orientar e cuidar das pessoas.',
     careers: ['Educação', 'Psicologia', 'Serviço Social', 'Saúde', 'RH'],
     color: 'hsl(330, 81%, 60%)',
+    subdivisions: ['GRUPO', 'COMUNICAÇÃO', 'EMPATIA', 'COLABORAÇÃO', 'AJUDA', 'ENSINO', 'CUIDADO', 'ESCUTA', 'APOIO', 'COOPERAÇÃO'],
   },
   E: {
     type: 'E',
@@ -86,6 +91,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é líder, persuasivo e motivado por desafios. Gosta de influenciar pessoas, tomar decisões e buscar resultados ambiciosos.',
     careers: ['Administração', 'Vendas', 'Marketing', 'Direito', 'Gestão'],
     color: 'hsl(25, 95%, 53%)',
+    subdivisions: ['LIDERANÇA', 'RISCO', 'EXPOSIÇÃO', 'PERSUASÃO', 'INFLUÊNCIA', 'DECISÃO', 'AMBIÇÃO', 'COMPETIÇÃO', 'INICIATIVA', 'VISÃO'],
   },
   C: {
     type: 'C',
@@ -94,5 +100,6 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é organizado, metódico e detalhista. Gosta de seguir processos, trabalhar com dados e manter tudo em ordem.',
     careers: ['Contabilidade', 'Finanças', 'Administração', 'Logística', 'Auditoria'],
     color: 'hsl(47, 96%, 53%)',
+    subdivisions: ['ORGANIZAÇÃO', 'CONTROLE', 'PADRÃO', 'REGRAS', 'PRECISÃO', 'ESTRUTURA', 'PLANEJAMENTO', 'CONFORMIDADE', 'DADOS', 'DOCUMENTAÇÃO'],
   },
 };

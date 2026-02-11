@@ -94,64 +94,73 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
               </h2>
             </div>
 
-            {/* SIM / NÃO buttons */}
+            {/* SIM + icon area / NÃO + icon area - each fully clickable */}
             <div className="flex gap-[2px]">
+              {/* SIM column */}
               <button
                 onClick={() => handleAnswer('yes')}
                 className={cn(
-                  "flex-1 py-5 text-2xl font-extrabold uppercase tracking-wider text-white transition-all",
-                  selectedValue === 'yes'
-                    ? "bg-emerald-700"
-                    : "bg-emerald-600 hover:bg-emerald-700"
+                  "flex-1 flex flex-col transition-all cursor-pointer",
+                  selectedValue === 'yes' ? "opacity-90" : "hover:opacity-90"
                 )}
-                style={{ fontFamily: "'Syne', sans-serif" }}
               >
-                SIM
+                <div
+                  className={cn(
+                    "py-5 text-2xl font-extrabold uppercase tracking-wider text-white w-full",
+                    selectedValue === 'yes' ? "bg-emerald-700" : "bg-emerald-600"
+                  )}
+                  style={{ fontFamily: "'Syne', sans-serif" }}
+                >
+                  SIM
+                </div>
+                <div className="flex flex-col items-center gap-2 py-5 bg-card w-full border-r border-border/50">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: yesProfile.color }}
+                  >
+                    <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
+                  </div>
+                  <span
+                    className="text-xs font-extrabold uppercase tracking-wide"
+                    style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                  >
+                    {yesProfile.name}
+                  </span>
+                </div>
               </button>
+
+              {/* NÃO column */}
               <button
                 onClick={() => handleAnswer('no')}
                 className={cn(
-                  "flex-1 py-5 text-2xl font-extrabold uppercase tracking-wider text-white transition-all",
-                  selectedValue === 'no'
-                    ? "bg-red-900"
-                    : "bg-red-800 hover:bg-red-900"
+                  "flex-1 flex flex-col transition-all cursor-pointer",
+                  selectedValue === 'no' ? "opacity-90" : "hover:opacity-90"
                 )}
-                style={{ fontFamily: "'Syne', sans-serif" }}
               >
-                NÃO
+                <div
+                  className={cn(
+                    "py-5 text-2xl font-extrabold uppercase tracking-wider text-white w-full",
+                    selectedValue === 'no' ? "bg-red-900" : "bg-red-800"
+                  )}
+                  style={{ fontFamily: "'Syne', sans-serif" }}
+                >
+                  NÃO
+                </div>
+                <div className="flex flex-col items-center gap-2 py-5 bg-card w-full">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: noProfile.color }}
+                  >
+                    <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
+                  </div>
+                  <span
+                    className="text-xs font-extrabold uppercase tracking-wide"
+                    style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                  >
+                    {noProfile.name}
+                  </span>
+                </div>
               </button>
-            </div>
-
-            {/* Type labels */}
-            <div className="flex bg-card">
-              <div className="flex-1 flex flex-col items-center gap-2 py-5 border-r border-border/50">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: yesProfile.color }}
-                >
-                  <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
-                </div>
-                <span
-                  className="text-xs font-extrabold uppercase tracking-wide"
-                  style={{ color: yesProfile.color, fontFamily: "'Syne', sans-serif" }}
-                >
-                  {yesProfile.name}
-                </span>
-              </div>
-              <div className="flex-1 flex flex-col items-center gap-2 py-5">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: noProfile.color }}
-                >
-                  <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
-                </div>
-                <span
-                  className="text-xs font-extrabold uppercase tracking-wide"
-                  style={{ color: noProfile.color, fontFamily: "'Syne', sans-serif" }}
-                >
-                  {noProfile.name}
-                </span>
-              </div>
             </div>
           </div>
         </div>

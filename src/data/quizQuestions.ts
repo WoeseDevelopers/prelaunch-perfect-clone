@@ -13,12 +13,12 @@ export interface Question {
 
 export const questions: Question[] = [
   // Mistura orgânica dos pares antagônicos R×I, A×C, S×E
-  { id: 1,  text: "Gosto de trabalhar com ferramentas, máquinas ou atividades manuais.", yesType: 'R', noType: 'I', yesLabel: 'REALISTA', noLabel: 'INVESTIGATIVO' },
-  { id: 2,  text: "Gosto de investigar, pesquisar e entender como as coisas funcionam.", yesType: 'I', noType: 'R', yesLabel: 'INVESTIGATIVO', noLabel: 'REALISTA' },
-  { id: 3,  text: "Gosto de me expressar através da arte, música, escrita ou design.", yesType: 'A', noType: 'C', yesLabel: 'ARTÍSTICO', noLabel: 'CONVENCIONAL' },
-  { id: 4,  text: "Gosto de ajudar pessoas e contribuir para o bem-estar dos outros.", yesType: 'S', noType: 'E', yesLabel: 'SOCIAL', noLabel: 'EMPREENDEDOR' },
-  { id: 5,  text: "Gosto de liderar projetos e influenciar decisões.", yesType: 'E', noType: 'S', yesLabel: 'EMPREENDEDOR', noLabel: 'SOCIAL' },
-  { id: 6,  text: "Gosto de organizar informações, documentos e processos.", yesType: 'C', noType: 'A', yesLabel: 'CONVENCIONAL', noLabel: 'ARTÍSTICO' },
+  { id: 1,  text: "Gosto de trabalhar com ferramentas, máquinas ou atividades manuais.", yesType: 'R', noType: 'I', yesLabel: 'REALISTA', noLabel: 'ESTUDO' },
+  { id: 2,  text: "Gosto de investigar, pesquisar e entender como as coisas funcionam.", yesType: 'I', noType: 'R', yesLabel: 'ANÁLISE', noLabel: 'COISAS' },
+  { id: 3,  text: "Gosto de me expressar através da arte, música, escrita ou design.", yesType: 'A', noType: 'C', yesLabel: 'EXPRESSÃO', noLabel: 'ORGANIZAÇÃO' },
+  { id: 4,  text: "Gosto de ajudar pessoas e contribuir para o bem-estar dos outros.", yesType: 'S', noType: 'E', yesLabel: 'EMPATIA', noLabel: 'INICIATIVA' },
+  { id: 5,  text: "Gosto de liderar projetos e influenciar decisões.", yesType: 'E', noType: 'S', yesLabel: 'DECISÃO', noLabel: 'COMUNICAÇÃO' },
+  { id: 6,  text: "Gosto de organizar informações, documentos e processos.", yesType: 'C', noType: 'A', yesLabel: 'CONTROLE', noLabel: 'IDENTIDADE' },
 
   // Rodada 2 — invertendo alguns pares para imprevisibilidade
   { id: 7,  text: "Prefiro analisar dados e informações antes de tomar decisões.", yesType: 'I', noType: 'R', yesLabel: 'DIAGNÓSTICO', noLabel: 'PRODUÇÃO' },

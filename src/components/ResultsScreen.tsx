@@ -79,7 +79,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
 
   return (
     <div className="min-h-screen px-4 py-8">
-      <div className="w-full max-w-lg mx-auto space-y-6">
+      <div className="w-full max-w-[980px] mx-auto space-y-6">
         {/* Header - dominant profile */}
         <div className="text-center animate-fade-in-up">
           <p className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--trampos-purple))] mb-2">

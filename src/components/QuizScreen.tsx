@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconCheck, IconX } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { questions, riasecProfiles } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
@@ -17,6 +17,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   const question = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
   const selectedValue = answers[question.id];
+
+  // Count yes/no answers so far
+  const yesCount = Object.values(answers).filter(v => v === 'yes').length;
+  const noCount = Object.values(answers).filter(v => v === 'no').length;
 
   // Get profile info for labels
   const yesProfile = riasecProfiles[question.yesType];
@@ -53,11 +57,25 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             <IconArrowLeft className="h-8 w-8" />
-            Voltar
           </button>
-          <span className="text-sm font-medium text-muted-foreground">
-            {currentIndex + 1} / {questions.length}
-          </span>
+
+          {/* Counters: ✓ yes, ✗ no, current/total */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center rounded-full border border-border bg-card overflow-hidden">
+              <span className="inline-flex items-center gap-1 bg-emerald-600 text-white px-3 py-1.5 rounded-full text-sm font-bold">
+                <IconCheck className="h-4 w-4" />
+                {String(yesCount).padStart(2, '0')}
+              </span>
+              <span className="inline-flex items-center gap-1 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-bold">
+                <IconX className="h-4 w-4" />
+                {String(noCount).padStart(2, '0')}
+              </span>
+            </div>
+            <span className="inline-flex items-center rounded-full border border-border bg-card px-4 py-1.5 text-sm font-bold text-foreground">
+              {String(currentIndex + 1).padStart(2, '0')}
+              <span className="text-muted-foreground font-medium">/{questions.length}</span>
+            </span>
+          </div>
         </div>
 
         {/* Progress bar */}

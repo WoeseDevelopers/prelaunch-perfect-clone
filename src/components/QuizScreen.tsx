@@ -52,7 +52,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             onClick={handlePrev}
             className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <IconArrowLeft className="h-4 w-4" />
+            <IconArrowLeft className="h-8 w-8" />
             Voltar
           </button>
           <span className="text-sm font-medium text-muted-foreground">
@@ -116,7 +116,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
                 style={{ backgroundColor: primaryProfile.color }}
               >
-                <RiasecIcon name={primaryProfile.icon} className="text-white" size={20} />
+                <RiasecIcon name={primaryProfile.icon} className="text-white" size={40} />
               </div>
               <span
                 className="text-[10px] font-bold uppercase tracking-widest"
@@ -132,7 +132,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
                 style={{ backgroundColor: antagonistProfile.color }}
               >
-                <RiasecIcon name={antagonistProfile.icon} className="text-white" size={20} />
+                <RiasecIcon name={antagonistProfile.icon} className="text-white" size={40} />
               </div>
               <span
                 className="text-[10px] font-bold uppercase tracking-widest"

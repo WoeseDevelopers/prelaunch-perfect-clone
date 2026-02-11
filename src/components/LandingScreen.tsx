@@ -20,7 +20,7 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
         <Card className="animate-fade-in-up-delay rounded-2xl border border-border/50 shadow-lg">
           <CardContent className="p-8 space-y-5">
             <div className="flex items-center justify-center gap-2">
-              <IconSparkles className="h-5 w-5 text-[hsl(var(--trampos-purple))]" />
+              <IconSparkles className="h-10 w-10 text-[hsl(var(--trampos-purple))]" />
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Teste Vocacional
               </span>
@@ -35,7 +35,7 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
               onClick={onStart}
               className="w-full rounded-full bg-[hsl(var(--trampos-purple))] text-lg font-semibold text-white transition-transform hover:scale-105 hover:bg-[hsl(var(--trampos-purple))]/90 h-12"
             >
-              Começar <IconRocket className="inline h-5 w-5 ml-1" />
+              Começar <IconRocket className="inline h-10 w-10 ml-1" />
             </Button>
 
             <p className="text-xs text-muted-foreground">

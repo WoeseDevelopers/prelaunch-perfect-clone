@@ -80,7 +80,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
             Seu Resultado
           </p>
           <div className="flex items-center justify-center gap-2 mb-3">
-            <RiasecIcon name={dominantProfile.icon} size={36} className="text-foreground" />
+            <RiasecIcon name={dominantProfile.icon} size={72} className="text-foreground" />
             <h2 className="text-4xl font-extrabold text-foreground">
               {dominantProfile.name}
             </h2>
@@ -133,13 +133,13 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                     <th className="py-2 text-left font-semibold text-muted-foreground">Tipo</th>
                     <th className="py-2 text-center font-semibold text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
-                        <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
+                        <IconCheck className="h-7 w-7 text-emerald-500" />
                         SIM
                       </span>
                     </th>
                     <th className="py-2 text-center font-semibold text-muted-foreground">
                       <span className="inline-flex items-center gap-1">
-                        <IconX className="h-3.5 w-3.5 text-red-500" />
+                        <IconX className="h-7 w-7 text-red-500" />
                         NÃO
                       </span>
                     </th>
@@ -158,10 +158,10 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                         <td className="py-2.5">
                           <div className="flex items-center gap-2">
                             <div
-                              className="w-7 h-7 rounded-full flex items-center justify-center"
+                              className="w-14 h-14 rounded-full flex items-center justify-center"
                               style={{ backgroundColor: profile.color }}
                             >
-                              <RiasecIcon name={profile.icon} size={14} className="text-white" />
+                              <RiasecIcon name={profile.icon} size={28} className="text-white" />
                             </div>
                             <span className={`font-semibold ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
                               {profile.name}
@@ -221,7 +221,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                   {/* Title row */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <RiasecIcon name={profile.icon} size={20} className="text-foreground" />
+                      <RiasecIcon name={profile.icon} size={40} className="text-foreground" />
                       <span className="text-lg font-bold text-foreground">
                         {profile.name}
                       </span>
@@ -276,14 +276,14 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
             variant="outline"
             className="flex-1 rounded-full h-12"
           >
-            <IconRefresh className="h-4 w-4 mr-2" />
+            <IconRefresh className="h-8 w-8 mr-2" />
             Refazer
           </Button>
           <Button
             onClick={handleShare}
             className="flex-1 rounded-full bg-[hsl(var(--trampos-purple))] text-white hover:bg-[hsl(var(--trampos-purple))]/90 h-12"
           >
-            <IconShare className="h-4 w-4 mr-2" />
+            <IconShare className="h-8 w-8 mr-2" />
             Compartilhar
           </Button>
         </div>

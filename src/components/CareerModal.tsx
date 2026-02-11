@@ -28,10 +28,11 @@ const CareerModal = ({ career, open, onOpenChange }: CareerModalProps) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-sm rounded-2xl p-0 overflow-hidden gap-0 border-t-4" style={{ borderTopColor: profile.color }}>
+      <DialogContent className="max-w-sm rounded-3xl p-5 overflow-hidden gap-0 border-0 bg-card">
+        <div className="rounded-2xl border-t-4 overflow-hidden bg-card" style={{ borderTopColor: profile.color }}>
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
-          <DialogTitle className="text-2xl font-extrabold text-foreground leading-tight">
+          <DialogTitle className="text-2xl font-extrabold text-foreground leading-tight" style={{ fontFamily: "'Syne', sans-serif" }}>
             {career.name}
           </DialogTitle>
           <p className="text-sm text-muted-foreground leading-relaxed mt-3">
@@ -129,6 +130,7 @@ const CareerModal = ({ career, open, onOpenChange }: CareerModalProps) => {
               </div>
             );
           })()}
+        </div>
         </div>
       </DialogContent>
     </Dialog>

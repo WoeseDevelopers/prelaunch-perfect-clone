@@ -126,7 +126,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
         </Card>
 
         {/* Unified type cards - side by side layout */}
-        <div className="animate-fade-in-up-delay space-y-4">
+        <div className="animate-fade-in-up-delay space-y-[30px]">
           {sorted.map(([type, score]) => {
             const profile = riasecProfiles[type];
             const pct = (score / maxScore) * 100;
@@ -146,7 +146,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                     {/* LEFT: Stats + Subdivisions */}
                     <div className="flex-1 md:border-r border-border/30">
                       {/* Stats header */}
-                      <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
+                      <div className="flex items-center gap-2 px-[30px] py-3 border-b border-border/30">
                         <span className="text-xs font-semibold text-muted-foreground">Tipo</span>
                         <div className="ml-auto flex items-center gap-4">
                           <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-muted-foreground">
@@ -160,7 +160,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                       </div>
 
                       {/* Stats row */}
-                      <div className={`flex items-center gap-2 px-3 py-2.5 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
+                      <div className={`flex items-center gap-3 px-[30px] py-3 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
                           style={{ backgroundColor: profile.color }}
@@ -185,7 +185,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                       </div>
 
                       {/* Subdivisions */}
-                      <div className="px-3 py-2.5 border-t border-border/30">
+                      <div className="px-[30px] py-4 border-t border-border/30">
                         <div className="flex flex-wrap gap-1.5">
                           {profile.subdivisions.map((sub) => {
                             const isActive = active.includes(sub);
@@ -209,7 +209,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                     </div>
 
                     {/* RIGHT: Detail card */}
-                    <div className="flex-1 p-4 space-y-2.5 border-t md:border-t-0 border-border/30">
+                    <div className="flex-1 p-[30px] space-y-3 border-t md:border-t-0 border-border/30">
                       {/* Title row */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">

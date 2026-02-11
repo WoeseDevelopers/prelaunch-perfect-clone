@@ -1,23 +1,24 @@
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { questions, answerOptions } from "@/data/quizQuestions";
+import { questions, antagonisms, type RiasecType } from "@/data/quizQuestions";
 import { cn } from "@/lib/utils";
 
+// Answer stores which RIASEC type got the point
 interface QuizScreenProps {
-  onComplete: (answers: Record<number, number>) => void;
+  onComplete: (answers: Record<number, 'yes' | 'no'>) => void;
   onBack: () => void;
 }
 
 const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [answers, setAnswers] = useState<Record<number, 'yes' | 'no'>>({});
 
   const question = questions[currentIndex];
   const progress = ((currentIndex + 1) / questions.length) * 100;
   const selectedValue = answers[question.id];
 
-  const handleAnswer = (value: number) => {
+  const handleAnswer = (value: 'yes' | 'no') => {
     const newAnswers = { ...answers, [question.id]: value };
     setAnswers(newAnswers);
 
@@ -64,40 +65,42 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           className="flex flex-col items-center justify-center pt-24 pb-8 animate-fade-in-up"
         >
           <p className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--trampos-purple))] mb-4">
-            O quanto você curte...
+            Pergunta
           </p>
           <h2 className="text-2xl md:text-3xl font-bold text-center leading-tight text-foreground mb-10">
             {question.text}
           </h2>
 
-          {/* Answer options */}
-          <div className="w-full space-y-3">
-            {answerOptions.map((option) => (
-              <button
-                key={option.value}
-                onClick={() => handleAnswer(option.value)}
-                className={cn(
-                  "w-full flex items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all hover:scale-[1.01]",
-                  selectedValue === option.value
-                    ? "border-[hsl(var(--trampos-purple))] bg-[hsl(var(--trampos-purple))]/5"
-                    : "border-border bg-card hover:border-muted-foreground/30"
-                )}
-              >
-                <span
-                  className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold",
-                    selectedValue === option.value
-                      ? "bg-[hsl(var(--trampos-purple))] text-white"
-                      : "bg-secondary text-muted-foreground"
-                  )}
-                >
-                  {option.value}
-                </span>
-                <span className="text-base font-medium text-foreground">
-                  {option.label}
-                </span>
-              </button>
-            ))}
+          {/* SIM / NÃO buttons */}
+          <div className="w-full flex gap-4">
+            <button
+              onClick={() => handleAnswer('yes')}
+              className={cn(
+                "flex-1 flex flex-col items-center gap-2 rounded-2xl border px-5 py-6 transition-all hover:scale-[1.02]",
+                selectedValue === 'yes'
+                  ? "border-emerald-500 bg-emerald-500/10"
+                  : "border-border bg-card hover:border-emerald-500/50"
+              )}
+            >
+              <Check className={cn("h-8 w-8", selectedValue === 'yes' ? "text-emerald-500" : "text-muted-foreground")} />
+              <span className={cn("text-lg font-bold", selectedValue === 'yes' ? "text-emerald-500" : "text-foreground")}>
+                SIM
+              </span>
+            </button>
+            <button
+              onClick={() => handleAnswer('no')}
+              className={cn(
+                "flex-1 flex flex-col items-center gap-2 rounded-2xl border px-5 py-6 transition-all hover:scale-[1.02]",
+                selectedValue === 'no'
+                  ? "border-red-400 bg-red-400/10"
+                  : "border-border bg-card hover:border-red-400/50"
+              )}
+            >
+              <X className={cn("h-8 w-8", selectedValue === 'no' ? "text-red-400" : "text-muted-foreground")} />
+              <span className={cn("text-lg font-bold", selectedValue === 'no' ? "text-red-400" : "text-foreground")}>
+                NÃO
+              </span>
+            </button>
           </div>
         </div>
       </div>

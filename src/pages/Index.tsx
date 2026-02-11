@@ -7,11 +7,11 @@ type Screen = "landing" | "quiz" | "results";
 
 const Index = () => {
   const [screen, setScreen] = useState<Screen>("landing");
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [answers, setAnswers] = useState<Record<number, 'yes' | 'no'>>({});
 
   const handleStart = () => setScreen("quiz");
 
-  const handleComplete = (ans: Record<number, number>) => {
+  const handleComplete = (ans: Record<number, 'yes' | 'no'>) => {
     setAnswers(ans);
     setScreen("results");
   };

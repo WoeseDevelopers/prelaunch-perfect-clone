@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { IconRefresh, IconShare, IconCheck, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,7 +11,9 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { questions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
+import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
+import CareerModal from "@/components/CareerModal";
 
 interface ResultsScreenProps {
   answers: Record<number, 'yes' | 'no'>;
@@ -53,6 +55,8 @@ function getActivatedLabels(answers: Record<number, 'yes' | 'no'>) {
 }
 
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
+  const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
   const activatedLabels = getActivatedLabels(answers);
@@ -235,14 +239,25 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
 
                     {/* Careers */}
                     <div className="flex flex-wrap gap-1.5">
-                      {profile.careers.map((c) => (
-                        <span
-                          key={c}
-                          className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-[11px] font-medium text-foreground/80"
-                        >
-                          {c}
-                        </span>
-                      ))}
+                      {profile.careers.map((c) => {
+                        const detail = careerDetails.find(
+                          (cd) => cd.name === c && cd.type === type
+                        );
+                        return (
+                          <button
+                            key={c}
+                            onClick={() => {
+                              if (detail) {
+                                setSelectedCareer(detail);
+                                setModalOpen(true);
+                              }
+                            }}
+                            className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-[11px] font-medium text-foreground/80 hover:bg-secondary transition-colors cursor-pointer"
+                          >
+                            {c}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </CardContent>
@@ -288,6 +303,11 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
           </Button>
         </div>
       </div>
+      <CareerModal
+        career={selectedCareer}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+      />
     </div>
   );
 };

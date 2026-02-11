@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { questions, riasecProfiles, antagonisms } from "@/data/quizQuestions";
+import RiasecIcon from "@/components/RiasecIcon";
 import { cn } from "@/lib/utils";
 
 interface QuizScreenProps {
@@ -115,7 +116,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
                 style={{ backgroundColor: primaryProfile.color }}
               >
-                <span className="text-white text-lg">{primaryProfile.emoji}</span>
+                <RiasecIcon name={primaryProfile.icon} className="text-white" size={20} />
               </div>
               <span
                 className="text-[10px] font-bold uppercase tracking-widest"
@@ -131,7 +132,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
                 style={{ backgroundColor: antagonistProfile.color }}
               >
-                <span className="text-white text-lg">{antagonistProfile.emoji}</span>
+                <RiasecIcon name={antagonistProfile.icon} className="text-white" size={20} />
               </div>
               <span
                 className="text-[10px] font-bold uppercase tracking-widest"

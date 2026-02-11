@@ -70,41 +70,49 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         >
           {/* Pergunta header */}
           <div className="pt-6 px-6">
-            <p className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-6">
+            <p
+              className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-6"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
               Pergunta
             </p>
           </div>
 
           {/* Question text */}
           <div className="px-6 pb-8 min-h-[140px] flex items-start">
-            <h2 className="text-xl md:text-2xl font-bold leading-tight text-foreground">
+            <h2
+              className="text-xl md:text-2xl font-bold leading-tight text-foreground"
+              style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            >
               {question.text}
             </h2>
           </div>
 
           {/* SIM / NÃO buttons */}
-          <div className="flex">
+          <div className="flex gap-[2px]">
             <button
               onClick={() => handleAnswer('yes')}
               className={cn(
-                "flex-1 py-4 text-2xl font-black uppercase tracking-wider text-white transition-all",
+                "flex-1 py-5 text-2xl font-extrabold uppercase tracking-wider text-white transition-all",
                 selectedValue === 'yes'
                   ? "bg-emerald-700"
                   : "bg-emerald-600 hover:bg-emerald-700"
               )}
+              style={{ fontFamily: "'Syne', sans-serif" }}
             >
-              sim
+              SIM
             </button>
             <button
               onClick={() => handleAnswer('no')}
               className={cn(
-                "flex-1 py-4 text-2xl font-black uppercase tracking-wider text-white transition-all",
+                "flex-1 py-5 text-2xl font-extrabold uppercase tracking-wider text-white transition-all",
                 selectedValue === 'no'
                   ? "bg-red-900"
                   : "bg-red-800 hover:bg-red-900"
               )}
+              style={{ fontFamily: "'Syne', sans-serif" }}
             >
-              não
+              NÃO
             </button>
           </div>
 
@@ -113,14 +121,14 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             {/* SIM type */}
             <div className="flex-1 flex flex-col items-center gap-2 py-5 border-r border-border/50">
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                 style={{ backgroundColor: yesProfile.color }}
               >
-                <RiasecIcon name={yesProfile.icon} className="text-white" size={32} />
+                <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
               </div>
               <span
-                className="text-sm font-bold"
-                style={{ color: yesProfile.color }}
+                className="text-xs font-extrabold uppercase tracking-wide"
+                style={{ color: yesProfile.color, fontFamily: "'Syne', sans-serif" }}
               >
                 {yesProfile.name}
               </span>
@@ -129,14 +137,14 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             {/* NÃO type */}
             <div className="flex-1 flex flex-col items-center gap-2 py-5">
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                 style={{ backgroundColor: noProfile.color }}
               >
-                <RiasecIcon name={noProfile.icon} className="text-white" size={32} />
+                <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
               </div>
               <span
-                className="text-sm font-bold"
-                style={{ color: noProfile.color }}
+                className="text-xs font-extrabold uppercase tracking-wide"
+                style={{ color: noProfile.color, fontFamily: "'Syne', sans-serif" }}
               >
                 {noProfile.name}
               </span>

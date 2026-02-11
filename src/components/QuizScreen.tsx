@@ -74,14 +74,18 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             className="rounded-2xl border border-border overflow-hidden flex flex-col bg-card"
             style={{ height: '600px' }}
           >
-            {/* Question area */}
-            <div className="flex-1 flex flex-col items-center justify-center px-5 py-6">
+            {/* "Pergunta" fixed at top */}
+            <div className="pt-5 px-5">
               <p
-                className="text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-6"
+                className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide"
                 style={{ fontFamily: "'Syne', sans-serif" }}
               >
                 Pergunta
               </p>
+            </div>
+
+            {/* Question text centered in remaining space */}
+            <div className="flex-1 flex items-center justify-center px-5">
               <h2
                 className="font-bold leading-snug text-foreground text-center"
                 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: '1.5rem' }}

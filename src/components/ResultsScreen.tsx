@@ -196,15 +196,32 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                             return (
                               <span
                                 key={sub}
-                                className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide"
+                                className="inline-flex items-center gap-1 rounded-full text-[9px] font-bold uppercase tracking-wide"
                                 style={{
                                   backgroundColor: isActive ? profile.color : 'transparent',
                                   color: isActive ? '#fff' : profile.color,
                                   border: `1.5px solid ${profile.color}`,
                                   opacity: isActive ? 1 : 0.3,
+                                  paddingLeft: '10px',
+                                  paddingRight: isActive ? '3px' : '10px',
+                                  paddingTop: '3px',
+                                  paddingBottom: '3px',
                                 }}
                               >
-                                {sub}{isActive && ` ×${count}`}
+                                {sub}
+                                {isActive && (
+                                  <span
+                                    className="inline-flex items-center justify-center rounded-full text-[9px] font-bold"
+                                    style={{
+                                      width: '20px',
+                                      height: '20px',
+                                      backgroundColor: '#fff',
+                                      color: profile.color,
+                                    }}
+                                  >
+                                    {String(count).padStart(2, '0')}
+                                  </span>
+                                )}
                               </span>
                             );
                           })}

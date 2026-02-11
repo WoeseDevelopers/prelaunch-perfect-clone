@@ -4,7 +4,7 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { riasecProfiles } from "@/data/quizQuestions";
+import { riasecProfiles, type RiasecType } from "@/data/quizQuestions";
 import type { CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 
@@ -52,22 +52,25 @@ const CareerModal = ({ career, open, onOpenChange }: CareerModalProps) => {
           </div>
         </div>
 
-        {/* Related subtypes as icons */}
+        {/* Related subtypes from multiple RIASEC types */}
         <div className="px-6 pb-6">
           <div className="flex items-center justify-center gap-5">
-            {career.relatedSubtypes.map((sub) => (
-              <div key={sub} className="flex flex-col items-center gap-1.5">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: profile.color }}
-                >
-                  <RiasecIcon name={profile.icon} size={22} className="text-white" />
+            {career.relatedSubtypes.map((sub) => {
+              const subProfile = riasecProfiles[sub.type];
+              return (
+                <div key={sub.label} className="flex flex-col items-center gap-1.5">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: subProfile.color }}
+                  >
+                    <RiasecIcon name={subProfile.icon} size={22} className="text-white" />
+                  </div>
+                  <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground text-center max-w-[70px] leading-tight">
+                    {sub.label}
+                  </span>
                 </div>
-                <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">
-                  {sub}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </DialogContent>

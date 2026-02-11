@@ -1,4 +1,4 @@
-import { IconRefresh, IconShare } from "@tabler/icons-react";
+import { IconRefresh, IconShare, IconCheck, IconX } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -30,9 +30,24 @@ function calculateScores(answers: Record<number, 'yes' | 'no'>) {
   return scores;
 }
 
+function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
+  const sim: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+  const nao: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+  questions.forEach((q) => {
+    const answer = answers[q.id];
+    if (answer === 'yes') {
+      sim[q.type] += 1;
+    } else if (answer === 'no') {
+      nao[q.type] += 1;
+    }
+  });
+  return { sim, nao };
+}
+
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
-  const maxScore = 24; // 24 questions, each awards 1 point to either the type or its antagonist
+  const { sim, nao } = calculateSimNao(answers);
+  const maxScore = 24;
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({
     subject: riasecProfiles[type].name,
@@ -104,7 +119,90 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
           </CardContent>
         </Card>
 
-        {/* All profiles as cards */}
+        {/* Statistics Table */}
+        <Card className="animate-fade-in-up-delay rounded-2xl border border-border/50 shadow-sm">
+          <CardContent className="p-5 space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground text-center">
+              Estatística de Escolhas
+            </h3>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="py-2 text-left font-semibold text-muted-foreground">Tipo</th>
+                    <th className="py-2 text-center font-semibold text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <IconCheck className="h-3.5 w-3.5 text-emerald-500" />
+                        SIM
+                      </span>
+                    </th>
+                    <th className="py-2 text-center font-semibold text-muted-foreground">
+                      <span className="inline-flex items-center gap-1">
+                        <IconX className="h-3.5 w-3.5 text-red-500" />
+                        NÃO
+                      </span>
+                    </th>
+                    <th className="py-2 text-center font-semibold text-muted-foreground">Pontos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sorted.map(([type, score]) => {
+                    const profile = riasecProfiles[type];
+                    const isDominant = type === dominantType;
+                    return (
+                      <tr
+                        key={type}
+                        className={`border-b border-border/50 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}
+                      >
+                        <td className="py-2.5">
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-7 h-7 rounded-full flex items-center justify-center"
+                              style={{ backgroundColor: profile.color }}
+                            >
+                              <RiasecIcon name={profile.icon} size={14} className="text-white" />
+                            </div>
+                            <span className={`font-semibold ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
+                              {profile.name}
+                            </span>
+                            {isDominant && (
+                              <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-bold text-white">
+                                TOP
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="py-2.5 text-center font-bold text-emerald-600">{sim[type]}</td>
+                        <td className="py-2.5 text-center font-bold text-red-500">{nao[type]}</td>
+                        <td className="py-2.5 text-center">
+                          <span className="font-extrabold text-lg" style={{ color: profile.color }}>
+                            {score}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+                <tfoot>
+                  <tr className="border-t-2 border-border">
+                    <td className="py-2.5 font-bold text-foreground">Total</td>
+                    <td className="py-2.5 text-center font-bold text-emerald-600">
+                      {Object.values(sim).reduce((a, b) => a + b, 0)}
+                    </td>
+                    <td className="py-2.5 text-center font-bold text-red-500">
+                      {Object.values(nao).reduce((a, b) => a + b, 0)}
+                    </td>
+                    <td className="py-2.5 text-center font-extrabold text-lg text-foreground">
+                      {Object.values(scores).reduce((a, b) => a + b, 0)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="animate-fade-in-up-delay-2 space-y-4">
           {sorted.map(([type, score]) => {
             const profile = riasecProfiles[type];

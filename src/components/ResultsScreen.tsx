@@ -125,7 +125,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
           </CardContent>
         </Card>
 
-        {/* Unified type cards */}
+        {/* Unified type cards - side by side layout */}
         <div className="animate-fade-in-up-delay space-y-4">
           {sorted.map(([type, score]) => {
             const profile = riasecProfiles[type];
@@ -142,90 +142,115 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                 }`}
               >
                 <CardContent className="p-0">
-                  {/* Stats row (image 1 style) */}
-                  <div className={`flex items-center gap-3 px-4 py-3 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: profile.color }}
-                    >
-                      <RiasecIcon name={profile.icon} size={24} className="text-white" />
-                    </div>
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      <span className={`font-bold text-base ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
-                        {profile.name}
-                      </span>
-                      {isDominant && (
-                        <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-bold text-white">
-                          TOP
-                        </span>
-                      )}
-                    </div>
-                    <div className="ml-auto flex items-center gap-4 shrink-0">
-                      <div className="text-center">
-                        <span className="text-[10px] text-muted-foreground font-semibold block">SIM</span>
-                        <span className="font-bold text-emerald-600">{sim[type]}</span>
-                      </div>
-                      <div className="text-center">
-                        <span className="text-[10px] text-muted-foreground font-semibold block">NÃO</span>
-                        <span className="font-bold text-red-500">{nao[type]}</span>
-                      </div>
-                      <div className="text-center">
-                        <span className="text-[10px] text-muted-foreground font-semibold block">PTS</span>
-                        <span className="font-extrabold text-lg" style={{ color: profile.color }}>
-                          {score}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Subdivisions */}
-                  <div className="px-4 py-2.5 border-t border-border/30">
-                    <div className="flex flex-wrap gap-1.5">
-                      {profile.subdivisions.map((sub) => {
-                        const isActive = active.includes(sub);
-                        return (
-                          <span
-                            key={sub}
-                            className="rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide"
-                            style={{
-                              backgroundColor: isActive ? profile.color : 'transparent',
-                              color: isActive ? '#fff' : profile.color,
-                              border: `1.5px solid ${profile.color}`,
-                              opacity: isActive ? 1 : 0.3,
-                            }}
-                          >
-                            {sub}
+                  <div className="flex flex-col md:flex-row">
+                    {/* LEFT: Stats + Subdivisions */}
+                    <div className="flex-1 md:border-r border-border/30">
+                      {/* Stats header */}
+                      <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30">
+                        <span className="text-xs font-semibold text-muted-foreground">Tipo</span>
+                        <div className="ml-auto flex items-center gap-4">
+                          <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-muted-foreground">
+                            <IconCheck className="h-4 w-4 text-emerald-500" /> SIM
                           </span>
-                        );
-                      })}
-                    </div>
-                  </div>
+                          <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-muted-foreground">
+                            <IconX className="h-4 w-4 text-red-500" /> NÃO
+                          </span>
+                          <span className="text-xs font-semibold text-muted-foreground">Pontos</span>
+                        </div>
+                      </div>
 
-                  {/* Detail section (image 2 style) */}
-                  <div className="px-4 pb-4 pt-2 space-y-2.5 border-t border-border/30">
-                    {/* Progress bar */}
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%`, backgroundColor: profile.color }}
-                      />
-                    </div>
-
-                    {/* Description */}
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {profile.description}
-                    </p>
-
-                    {/* Career tags */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {profile.careers.map((c) => (
-                        <span
-                          key={c}
-                          className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-xs font-medium text-foreground/80"
+                      {/* Stats row */}
+                      <div className={`flex items-center gap-2 px-3 py-2.5 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: profile.color }}
                         >
-                          {c}
+                          <RiasecIcon name={profile.icon} size={20} className="text-white" />
+                        </div>
+                        <span className={`font-bold text-sm ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
+                          {profile.name}
                         </span>
-                      ))}
+                        {isDominant && (
+                          <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-1.5 py-0.5 text-[9px] font-bold text-white">
+                            TOP
+                          </span>
+                        )}
+                        <div className="ml-auto flex items-center gap-5 shrink-0">
+                          <span className="font-bold text-emerald-600">{sim[type]}</span>
+                          <span className="font-bold text-red-500">{nao[type]}</span>
+                          <span className="font-extrabold text-lg" style={{ color: profile.color }}>
+                            {score}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Subdivisions */}
+                      <div className="px-3 py-2.5 border-t border-border/30">
+                        <div className="flex flex-wrap gap-1.5">
+                          {profile.subdivisions.map((sub) => {
+                            const isActive = active.includes(sub);
+                            return (
+                              <span
+                                key={sub}
+                                className="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide"
+                                style={{
+                                  backgroundColor: isActive ? profile.color : 'transparent',
+                                  color: isActive ? '#fff' : profile.color,
+                                  border: `1.5px solid ${profile.color}`,
+                                  opacity: isActive ? 1 : 0.3,
+                                }}
+                              >
+                                {sub}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* RIGHT: Detail card */}
+                    <div className="flex-1 p-4 space-y-2.5 border-t md:border-t-0 border-border/30">
+                      {/* Title row */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <RiasecIcon name={profile.icon} size={28} className="text-foreground" />
+                          <span className="text-base font-bold text-foreground">{profile.name}</span>
+                          {isDominant && (
+                            <span className="rounded-full border border-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[10px] font-semibold text-[hsl(var(--trampos-purple))]">
+                              Destaque
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span className="text-lg font-bold" style={{ color: profile.color }}>{score}</span>
+                          <span className="text-xs text-muted-foreground">/{maxScore}</span>
+                        </div>
+                      </div>
+
+                      {/* Progress bar */}
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                        <div
+                          className="h-full rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%`, backgroundColor: profile.color }}
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        {profile.description}
+                      </p>
+
+                      {/* Career tags */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {profile.careers.map((c) => (
+                          <span
+                            key={c}
+                            className="rounded-full border border-border bg-secondary/50 px-2.5 py-0.5 text-[10px] font-medium text-foreground/80"
+                          >
+                            {c}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -237,25 +262,16 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
           <Card className="rounded-2xl border border-border/50 shadow-sm">
             <CardContent className="px-4 py-3 flex items-center gap-3">
               <span className="font-bold text-foreground">Total</span>
-              <div className="ml-auto flex items-center gap-4">
-                <div className="text-center">
-                  <span className="text-[10px] text-muted-foreground font-semibold block">SIM</span>
-                  <span className="font-bold text-emerald-600">
-                    {Object.values(sim).reduce((a, b) => a + b, 0)}
-                  </span>
-                </div>
-                <div className="text-center">
-                  <span className="text-[10px] text-muted-foreground font-semibold block">NÃO</span>
-                  <span className="font-bold text-red-500">
-                    {Object.values(nao).reduce((a, b) => a + b, 0)}
-                  </span>
-                </div>
-                <div className="text-center">
-                  <span className="text-[10px] text-muted-foreground font-semibold block">PTS</span>
-                  <span className="font-extrabold text-lg text-foreground">
-                    {Object.values(scores).reduce((a, b) => a + b, 0)}
-                  </span>
-                </div>
+              <div className="ml-auto flex items-center gap-5">
+                <span className="font-bold text-emerald-600">
+                  {Object.values(sim).reduce((a, b) => a + b, 0)}
+                </span>
+                <span className="font-bold text-red-500">
+                  {Object.values(nao).reduce((a, b) => a + b, 0)}
+                </span>
+                <span className="font-extrabold text-lg text-foreground">
+                  {Object.values(scores).reduce((a, b) => a + b, 0)}
+                </span>
               </div>
             </CardContent>
           </Card>

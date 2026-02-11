@@ -1,4 +1,4 @@
-import { RotateCcw, Share2 } from "lucide-react";
+import { IconRefresh, IconShare } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -177,14 +177,14 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
             variant="outline"
             className="flex-1 rounded-full h-12"
           >
-            <RotateCcw className="h-4 w-4 mr-2" />
+            <IconRefresh className="h-4 w-4 mr-2" />
             Refazer
           </Button>
           <Button
             onClick={handleShare}
             className="flex-1 rounded-full bg-[hsl(var(--trampos-purple))] text-white hover:bg-[hsl(var(--trampos-purple))]/90 h-12"
           >
-            <Share2 className="h-4 w-4 mr-2" />
+            <IconShare className="h-4 w-4 mr-2" />
             Compartilhar
           </Button>
         </div>

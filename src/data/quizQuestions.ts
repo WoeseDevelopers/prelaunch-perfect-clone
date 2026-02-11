@@ -39,11 +39,11 @@ export const questions: Question[] = [
 ];
 
 export const answerOptions = [
-  { value: 1, label: "Discordo totalmente" },
-  { value: 2, label: "Discordo" },
-  { value: 3, label: "Neutro" },
-  { value: 4, label: "Concordo" },
-  { value: 5, label: "Concordo totalmente" },
+  { value: 1, label: "Não curto" },
+  { value: 2, label: "Curto pouco" },
+  { value: 3, label: "Tanto faz" },
+  { value: 4, label: "Curto" },
+  { value: 5, label: "Curto muito" },
 ];
 
 export interface RiasecProfile {

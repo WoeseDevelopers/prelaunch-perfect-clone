@@ -40,11 +40,14 @@ function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
 }
 
 function getActivatedLabels(answers: Record<number, 'yes' | 'no'>) {
-  const labels: Record<RiasecType, string[]> = { R: [], I: [], A: [], S: [], E: [], C: [] };
+  const labels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
   questions.forEach((q) => {
     const answer = answers[q.id];
-    if (answer === 'yes') labels[q.yesType].push(q.yesLabel);
-    else if (answer === 'no') labels[q.noType].push(q.noLabel);
+    if (answer === 'yes') {
+      labels[q.yesType][q.yesLabel] = (labels[q.yesType][q.yesLabel] || 0) + 1;
+    } else if (answer === 'no') {
+      labels[q.noType][q.noLabel] = (labels[q.noType][q.noLabel] || 0) + 1;
+    }
   });
   return labels;
 }
@@ -188,7 +191,8 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                       <div className="px-[30px] py-4 border-t border-border/30">
                         <div className="flex flex-wrap gap-1.5">
                           {profile.subdivisions.map((sub) => {
-                            const isActive = active.includes(sub);
+                            const count = active[sub] || 0;
+                            const isActive = count > 0;
                             return (
                               <span
                                 key={sub}
@@ -200,7 +204,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                                   opacity: isActive ? 1 : 0.3,
                                 }}
                               >
-                                {sub}
+                                {sub}{isActive && ` ×${count}`}
                               </span>
                             );
                           })}

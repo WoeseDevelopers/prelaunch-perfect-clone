@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
-import { questions, riasecProfiles, antagonisms } from "@/data/quizQuestions";
+import { questions, riasecProfiles } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
 import { cn } from "@/lib/utils";
 
@@ -19,8 +19,8 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   const selectedValue = answers[question.id];
 
   // Get profile info for labels
-  const primaryProfile = riasecProfiles[question.type];
-  const antagonistProfile = riasecProfiles[antagonisms[question.type]];
+  const yesProfile = riasecProfiles[question.yesType];
+  const noProfile = riasecProfiles[question.noType];
 
   const handleAnswer = (value: 'yes' | 'no') => {
     const newAnswers = { ...answers, [question.id]: value };
@@ -109,36 +109,36 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           </div>
 
           {/* Type labels below buttons */}
-          <div className="flex bg-card">
-            {/* SIM label - primary type */}
-            <div className="flex-1 flex flex-col items-center gap-2 py-5">
+          <div className="bg-card divide-y divide-border/50">
+            {/* SIM label */}
+            <div className="flex items-center gap-4 px-6 py-4">
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
-                style={{ backgroundColor: primaryProfile.color }}
+                className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: yesProfile.color }}
               >
-                <RiasecIcon name={primaryProfile.icon} className="text-white" size={40} />
+                <RiasecIcon name={yesProfile.icon} className="text-white" size={32} />
               </div>
               <span
-                className="text-[10px] font-bold uppercase tracking-widest"
-                style={{ color: primaryProfile.color }}
+                className="text-base font-bold"
+                style={{ color: yesProfile.color }}
               >
-                {question.yesLabel}
+                {yesProfile.name}
               </span>
             </div>
 
-            {/* NÃO label - antagonist type */}
-            <div className="flex-1 flex flex-col items-center gap-2 py-5">
+            {/* NÃO label */}
+            <div className="flex items-center gap-4 px-6 py-4">
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
-                style={{ backgroundColor: antagonistProfile.color }}
+                className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: noProfile.color }}
               >
-                <RiasecIcon name={antagonistProfile.icon} className="text-white" size={40} />
+                <RiasecIcon name={noProfile.icon} className="text-white" size={32} />
               </div>
               <span
-                className="text-[10px] font-bold uppercase tracking-widest"
-                style={{ color: antagonistProfile.color }}
+                className="text-base font-bold"
+                style={{ color: noProfile.color }}
               >
-                {question.noLabel}
+                {noProfile.name}
               </span>
             </div>
           </div>

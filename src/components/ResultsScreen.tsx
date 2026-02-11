@@ -9,7 +9,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { questions, riasecProfiles, antagonisms, type RiasecType } from "@/data/quizQuestions";
+import { questions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
 
 interface ResultsScreenProps {
@@ -22,9 +22,9 @@ function calculateScores(answers: Record<number, 'yes' | 'no'>) {
   questions.forEach((q) => {
     const answer = answers[q.id];
     if (answer === 'yes') {
-      scores[q.type] += 1;
+      scores[q.yesType] += 1;
     } else if (answer === 'no') {
-      scores[antagonisms[q.type]] += 1;
+      scores[q.noType] += 1;
     }
   });
   return scores;
@@ -36,9 +36,9 @@ function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
   questions.forEach((q) => {
     const answer = answers[q.id];
     if (answer === 'yes') {
-      sim[q.type] += 1;
+      sim[q.yesType] += 1;
     } else if (answer === 'no') {
-      nao[q.type] += 1;
+      nao[q.noType] += 1;
     }
   });
   return { sim, nao };
@@ -47,7 +47,7 @@ function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
-  const maxScore = 24;
+  const maxScore = 18;
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({
     subject: riasecProfiles[type].name,

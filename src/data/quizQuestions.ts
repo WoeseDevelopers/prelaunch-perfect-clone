@@ -3,58 +3,39 @@ export type RiasecType = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 export interface Question {
   id: number;
   text: string;
-  type: RiasecType;
+  /** Tipo que recebe ponto ao responder SIM */
+  yesType: RiasecType;
+  /** Tipo que recebe ponto ao responder NÃO */
+  noType: RiasecType;
   yesLabel: string;
   noLabel: string;
 }
 
 export const questions: Question[] = [
-  // Realista (R) × Investigativo (I) — 4 perguntas
-  { id: 1, text: "Gosto de trabalhar com ferramentas, máquinas ou atividades manuais.", type: 'R', yesLabel: 'REALISTA', noLabel: 'INVESTIGATIVO' },
-  { id: 2, text: "Prefiro resolver problemas de forma prática, colocando a mão na massa.", type: 'R', yesLabel: 'EXECUÇÃO', noLabel: 'ANÁLISE' },
-  { id: 3, text: "Me sinto bem realizando atividades ao ar livre ou que envolvam esforço físico.", type: 'R', yesLabel: 'ROTINA', noLabel: 'PESQUISA' },
-  { id: 4, text: "Prefiro consertar e construir coisas do que estudar teorias sobre elas.", type: 'R', yesLabel: 'MANUTENÇÃO', noLabel: 'TEORIA' },
+  // Mistura orgânica dos pares antagônicos R×I, A×C, S×E
+  { id: 1,  text: "Gosto de trabalhar com ferramentas, máquinas ou atividades manuais.", yesType: 'R', noType: 'I', yesLabel: 'REALISTA', noLabel: 'INVESTIGATIVO' },
+  { id: 2,  text: "Gosto de investigar, pesquisar e entender como as coisas funcionam.", yesType: 'I', noType: 'R', yesLabel: 'INVESTIGATIVO', noLabel: 'REALISTA' },
+  { id: 3,  text: "Gosto de me expressar através da arte, música, escrita ou design.", yesType: 'A', noType: 'C', yesLabel: 'ARTÍSTICO', noLabel: 'CONVENCIONAL' },
+  { id: 4,  text: "Gosto de ajudar pessoas e contribuir para o bem-estar dos outros.", yesType: 'S', noType: 'E', yesLabel: 'SOCIAL', noLabel: 'EMPREENDEDOR' },
+  { id: 5,  text: "Gosto de liderar projetos e influenciar decisões.", yesType: 'E', noType: 'S', yesLabel: 'EMPREENDEDOR', noLabel: 'SOCIAL' },
+  { id: 6,  text: "Gosto de organizar informações, documentos e processos.", yesType: 'C', noType: 'A', yesLabel: 'CONVENCIONAL', noLabel: 'ARTÍSTICO' },
 
-  // Investigativo (I) × Realista (R) — 4 perguntas
-  { id: 5, text: "Gosto de investigar, pesquisar e entender como as coisas funcionam.", type: 'I', yesLabel: 'INVESTIGATIVO', noLabel: 'REALISTA' },
-  { id: 6, text: "Prefiro analisar dados e informações antes de tomar decisões.", type: 'I', yesLabel: 'DIAGNÓSTICO', noLabel: 'PRODUÇÃO' },
-  { id: 7, text: "Me interesso por ciência, tecnologia ou resolver problemas complexos.", type: 'I', yesLabel: 'CURIOSIDADE', noLabel: 'CONSTÂNCIA' },
-  { id: 8, text: "Gosto de observar padrões e formular hipóteses sobre fenômenos.", type: 'I', yesLabel: 'RACIOCÍNIO', noLabel: 'OPERAÇÃO' },
+  // Rodada 2 — invertendo alguns pares para imprevisibilidade
+  { id: 7,  text: "Prefiro analisar dados e informações antes de tomar decisões.", yesType: 'I', noType: 'R', yesLabel: 'DIAGNÓSTICO', noLabel: 'PRODUÇÃO' },
+  { id: 8,  text: "Me sinto bem realizando atividades ao ar livre ou que envolvam esforço físico.", yesType: 'R', noType: 'I', yesLabel: 'EXECUÇÃO', noLabel: 'PESQUISA' },
+  { id: 9,  text: "Me motivo com desafios competitivos e metas ambiciosas.", yesType: 'E', noType: 'S', yesLabel: 'AMBIÇÃO', noLabel: 'CUIDADO' },
+  { id: 10, text: "Prefiro seguir procedimentos claros e bem definidos.", yesType: 'C', noType: 'A', yesLabel: 'ESTRUTURA', noLabel: 'EXPRESSÃO' },
+  { id: 11, text: "Me sinto bem ensinando, orientando ou cuidando de outras pessoas.", yesType: 'S', noType: 'E', yesLabel: 'ENSINO', noLabel: 'LIDERANÇA' },
+  { id: 12, text: "Valorizo a criatividade e a originalidade no meu trabalho.", yesType: 'A', noType: 'C', yesLabel: 'CRIATIVIDADE', noLabel: 'PADRÃO' },
 
-  // Artístico (A) × Convencional (C) — 4 perguntas
-  { id: 9, text: "Gosto de me expressar através da arte, música, escrita ou design.", type: 'A', yesLabel: 'ARTÍSTICO', noLabel: 'CONVENCIONAL' },
-  { id: 10, text: "Valorizo a criatividade e a originalidade no meu trabalho.", type: 'A', yesLabel: 'CRIATIVIDADE', noLabel: 'PADRÃO' },
-  { id: 11, text: "Prefiro ambientes de trabalho flexíveis e sem muitas regras rígidas.", type: 'A', yesLabel: 'IMAGINAÇÃO', noLabel: 'REGRAS' },
-  { id: 12, text: "Me sinto atraído por inovação e por criar coisas novas.", type: 'A', yesLabel: 'INOVAÇÃO', noLabel: 'PRECISÃO' },
-
-  // Social (S) × Empreendedor (E) — 4 perguntas
-  { id: 13, text: "Gosto de ajudar pessoas e contribuir para o bem-estar dos outros.", type: 'S', yesLabel: 'SOCIAL', noLabel: 'EMPREENDEDOR' },
-  { id: 14, text: "Me sinto bem ensinando, orientando ou cuidando de outras pessoas.", type: 'S', yesLabel: 'ENSINO', noLabel: 'LIDERANÇA' },
-  { id: 15, text: "Prefiro trabalhar em equipe e valorizo a cooperação.", type: 'S', yesLabel: 'COOPERAÇÃO', noLabel: 'COMPETIÇÃO' },
-  { id: 16, text: "Me importo com a escuta ativa e o acolhimento das pessoas.", type: 'S', yesLabel: 'EMPATIA', noLabel: 'PERSUASÃO' },
-
-  // Empreendedor (E) × Social (S) — 4 perguntas
-  { id: 17, text: "Gosto de liderar projetos e influenciar decisões.", type: 'E', yesLabel: 'EMPREENDEDOR', noLabel: 'SOCIAL' },
-  { id: 18, text: "Me motivo com desafios competitivos e metas ambiciosas.", type: 'E', yesLabel: 'AMBIÇÃO', noLabel: 'CUIDADO' },
-  { id: 19, text: "Tenho facilidade para convencer e negociar com outras pessoas.", type: 'E', yesLabel: 'INFLUÊNCIA', noLabel: 'AJUDA' },
-  { id: 20, text: "Gosto de assumir riscos e tomar decisões sob pressão.", type: 'E', yesLabel: 'DECISÃO', noLabel: 'APOIO' },
-
-  // Convencional (C) × Artístico (A) — 4 perguntas
-  { id: 21, text: "Gosto de organizar informações, documentos e processos.", type: 'C', yesLabel: 'CONVENCIONAL', noLabel: 'ARTÍSTICO' },
-  { id: 22, text: "Prefiro seguir procedimentos claros e bem definidos.", type: 'C', yesLabel: 'ESTRUTURA', noLabel: 'EXPRESSÃO' },
-  { id: 23, text: "Me sinto confortável trabalhando com números, planilhas e dados.", type: 'C', yesLabel: 'DADOS', noLabel: 'ESTILO' },
-  { id: 24, text: "Valorizo a conformidade e a atenção aos detalhes no trabalho.", type: 'C', yesLabel: 'PLANEJAMENTO', noLabel: 'MUDANÇA' },
+  // Rodada 3 — mais mistura
+  { id: 13, text: "Prefiro consertar e construir coisas do que estudar teorias sobre elas.", yesType: 'R', noType: 'I', yesLabel: 'MANUTENÇÃO', noLabel: 'TEORIA' },
+  { id: 14, text: "Tenho facilidade para convencer e negociar com outras pessoas.", yesType: 'E', noType: 'S', yesLabel: 'INFLUÊNCIA', noLabel: 'AJUDA' },
+  { id: 15, text: "Me sinto confortável trabalhando com números, planilhas e dados.", yesType: 'C', noType: 'A', yesLabel: 'DADOS', noLabel: 'ESTILO' },
+  { id: 16, text: "Me interesso por ciência, tecnologia ou resolver problemas complexos.", yesType: 'I', noType: 'R', yesLabel: 'CURIOSIDADE', noLabel: 'CONSTÂNCIA' },
+  { id: 17, text: "Prefiro ambientes de trabalho flexíveis e sem muitas regras rígidas.", yesType: 'A', noType: 'C', yesLabel: 'IMAGINAÇÃO', noLabel: 'REGRAS' },
+  { id: 18, text: "Prefiro trabalhar em equipe e valorizo a cooperação.", yesType: 'S', noType: 'E', yesLabel: 'COOPERAÇÃO', noLabel: 'COMPETIÇÃO' },
 ];
-
-// Antagonismos RIASEC: R×I, A×C, S×E
-export const antagonisms: Record<RiasecType, RiasecType> = {
-  R: 'I',
-  I: 'R',
-  A: 'C',
-  C: 'A',
-  S: 'E',
-  E: 'S',
-};
 
 export interface RiasecProfile {
   type: RiasecType;

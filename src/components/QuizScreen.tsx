@@ -22,17 +22,21 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   const yesProfile = riasecProfiles[question.yesType];
   const noProfile = riasecProfiles[question.noType];
 
+  const [revealed, setRevealed] = useState(false);
+
   const handleAnswer = (value: 'yes' | 'no') => {
     const newAnswers = { ...answers, [question.id]: value };
     setAnswers(newAnswers);
+    setRevealed(true);
 
     setTimeout(() => {
+      setRevealed(false);
       if (currentIndex < questions.length - 1) {
         setCurrentIndex(currentIndex + 1);
       } else {
         onComplete(newAnswers);
       }
-    }, 400);
+    }, 1200);
   };
 
   const handlePrev = () => {
@@ -94,11 +98,12 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
               </h2>
             </div>
 
-            {/* SIM + icon area / NÃO + icon area - each fully clickable */}
+            {/* SIM + NÃO - tarjas primeiro, tipos revelados após escolha */}
             <div className="flex gap-[2px]">
               {/* SIM column */}
               <button
-                onClick={() => handleAnswer('yes')}
+                onClick={() => !revealed && handleAnswer('yes')}
+                disabled={revealed}
                 className={cn(
                   "flex-1 flex flex-col transition-all cursor-pointer",
                   selectedValue === 'yes' ? "opacity-90" : "hover:opacity-90"
@@ -113,7 +118,12 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 >
                   SIM
                 </div>
-                <div className="flex flex-col items-center gap-2 py-5 bg-card w-full border-r border-border/50">
+                <div
+                  className={cn(
+                    "flex flex-col items-center gap-2 bg-card w-full border-r border-border/50 overflow-hidden transition-all duration-500 ease-in-out",
+                    revealed ? "max-h-40 py-5 opacity-100" : "max-h-0 py-0 opacity-0"
+                  )}
+                >
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: yesProfile.color }}
@@ -131,7 +141,8 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
 
               {/* NÃO column */}
               <button
-                onClick={() => handleAnswer('no')}
+                onClick={() => !revealed && handleAnswer('no')}
+                disabled={revealed}
                 className={cn(
                   "flex-1 flex flex-col transition-all cursor-pointer",
                   selectedValue === 'no' ? "opacity-90" : "hover:opacity-90"
@@ -146,7 +157,12 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 >
                   NÃO
                 </div>
-                <div className="flex flex-col items-center gap-2 py-5 bg-card w-full">
+                <div
+                  className={cn(
+                    "flex flex-col items-center gap-2 bg-card w-full overflow-hidden transition-all duration-500 ease-in-out",
+                    revealed ? "max-h-40 py-5 opacity-100" : "max-h-0 py-0 opacity-0"
+                  )}
+                >
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: noProfile.color }}

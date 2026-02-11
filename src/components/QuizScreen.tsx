@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { ArrowLeft, Check, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { questions, antagonisms, type RiasecType } from "@/data/quizQuestions";
+import { questions, riasecProfiles, antagonisms } from "@/data/quizQuestions";
 import { cn } from "@/lib/utils";
 
-// Answer stores which RIASEC type got the point
 interface QuizScreenProps {
   onComplete: (answers: Record<number, 'yes' | 'no'>) => void;
   onBack: () => void;
@@ -18,6 +17,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   const progress = ((currentIndex + 1) / questions.length) * 100;
   const selectedValue = answers[question.id];
 
+  // Get profile info for labels
+  const primaryProfile = riasecProfiles[question.type];
+  const antagonistProfile = riasecProfiles[antagonisms[question.type]];
+
   const handleAnswer = (value: 'yes' | 'no') => {
     const newAnswers = { ...answers, [question.id]: value };
     setAnswers(newAnswers);
@@ -28,7 +31,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
       } else {
         onComplete(newAnswers);
       }
-    }, 300);
+    }, 400);
   };
 
   const handlePrev = () => {
@@ -59,48 +62,84 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         {/* Progress bar */}
         <Progress value={progress} className="h-2 bg-secondary mb-0" />
 
-        {/* Question area - centered vertically */}
+        {/* Card */}
         <div
           key={question.id}
-          className="flex flex-col items-center justify-center pt-24 pb-8 animate-fade-in-up"
+          className="mt-8 rounded-2xl border border-border bg-card shadow-sm overflow-hidden animate-fade-in-up"
         >
-          <p className="text-xs font-bold uppercase tracking-widest text-[hsl(var(--trampos-purple))] mb-4">
-            Pergunta
-          </p>
-          <h2 className="text-2xl md:text-3xl font-bold text-center leading-tight text-foreground mb-10">
-            {question.text}
-          </h2>
+          {/* Pergunta header */}
+          <div className="pt-6 px-6">
+            <p className="text-center text-sm font-bold italic text-muted-foreground/60 tracking-wide mb-6">
+              Pergunta
+            </p>
+          </div>
+
+          {/* Question text */}
+          <div className="px-6 pb-8 min-h-[140px] flex items-start">
+            <h2 className="text-xl md:text-2xl font-bold leading-tight text-foreground">
+              {question.text}
+            </h2>
+          </div>
 
           {/* SIM / NÃO buttons */}
-          <div className="w-full flex gap-4">
+          <div className="flex">
             <button
               onClick={() => handleAnswer('yes')}
               className={cn(
-                "flex-1 flex flex-col items-center gap-2 rounded-2xl border px-5 py-6 transition-all hover:scale-[1.02]",
+                "flex-1 py-4 text-2xl font-black uppercase tracking-wider text-white transition-all",
                 selectedValue === 'yes'
-                  ? "border-emerald-500 bg-emerald-500/10"
-                  : "border-border bg-card hover:border-emerald-500/50"
+                  ? "bg-emerald-700"
+                  : "bg-emerald-600 hover:bg-emerald-700"
               )}
             >
-              <Check className={cn("h-8 w-8", selectedValue === 'yes' ? "text-emerald-500" : "text-muted-foreground")} />
-              <span className={cn("text-lg font-bold", selectedValue === 'yes' ? "text-emerald-500" : "text-foreground")}>
-                SIM
-              </span>
+              sim
             </button>
             <button
               onClick={() => handleAnswer('no')}
               className={cn(
-                "flex-1 flex flex-col items-center gap-2 rounded-2xl border px-5 py-6 transition-all hover:scale-[1.02]",
+                "flex-1 py-4 text-2xl font-black uppercase tracking-wider text-white transition-all",
                 selectedValue === 'no'
-                  ? "border-red-400 bg-red-400/10"
-                  : "border-border bg-card hover:border-red-400/50"
+                  ? "bg-red-900"
+                  : "bg-red-800 hover:bg-red-900"
               )}
             >
-              <X className={cn("h-8 w-8", selectedValue === 'no' ? "text-red-400" : "text-muted-foreground")} />
-              <span className={cn("text-lg font-bold", selectedValue === 'no' ? "text-red-400" : "text-foreground")}>
-                NÃO
-              </span>
+              não
             </button>
+          </div>
+
+          {/* Type labels below buttons */}
+          <div className="flex bg-card">
+            {/* SIM label - primary type */}
+            <div className="flex-1 flex flex-col items-center gap-2 py-5">
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+                style={{ backgroundColor: primaryProfile.color }}
+              >
+                <span className="text-white text-lg">{primaryProfile.emoji}</span>
+              </div>
+              <span
+                className="text-[10px] font-bold uppercase tracking-widest"
+                style={{ color: primaryProfile.color }}
+              >
+                {question.yesLabel}
+              </span>
+            </div>
+
+            {/* NÃO label - antagonist type */}
+            <div className="flex-1 flex flex-col items-center gap-2 py-5">
+              <div
+                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl"
+                style={{ backgroundColor: antagonistProfile.color }}
+              >
+                <span className="text-white text-lg">{antagonistProfile.emoji}</span>
+              </div>
+              <span
+                className="text-[10px] font-bold uppercase tracking-widest"
+                style={{ color: antagonistProfile.color }}
+              >
+                {question.noLabel}
+              </span>
+            </div>
           </div>
         </div>
       </div>

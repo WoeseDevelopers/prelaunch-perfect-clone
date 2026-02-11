@@ -31,7 +31,7 @@ function calculateScores(answers: Record<number, 'yes' | 'no'>) {
 
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
-  const maxScore = 18; // each question awards 1 point to either the type or its antagonist
+  const maxScore = 24; // 24 questions, each awards 1 point to either the type or its antagonist
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({
     subject: riasecProfiles[type].name,

@@ -108,10 +108,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             </button>
           </div>
 
-          {/* Type labels below buttons */}
-          <div className="bg-card divide-y divide-border/50">
-            {/* SIM label */}
-            <div className="flex items-center gap-4 px-6 py-4">
+          {/* Type labels below buttons - side by side matching SIM/NÃO */}
+          <div className="flex bg-card">
+            {/* SIM type */}
+            <div className="flex-1 flex flex-col items-center gap-2 py-5 border-r border-border/50">
               <div
                 className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
                 style={{ backgroundColor: yesProfile.color }}
@@ -119,15 +119,15 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 <RiasecIcon name={yesProfile.icon} className="text-white" size={32} />
               </div>
               <span
-                className="text-base font-bold"
+                className="text-sm font-bold"
                 style={{ color: yesProfile.color }}
               >
                 {yesProfile.name}
               </span>
             </div>
 
-            {/* NÃO label */}
-            <div className="flex items-center gap-4 px-6 py-4">
+            {/* NÃO type */}
+            <div className="flex-1 flex flex-col items-center gap-2 py-5">
               <div
                 className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
                 style={{ backgroundColor: noProfile.color }}
@@ -135,7 +135,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 <RiasecIcon name={noProfile.icon} className="text-white" size={32} />
               </div>
               <span
-                className="text-base font-bold"
+                className="text-sm font-bold"
                 style={{ color: noProfile.color }}
               >
                 {noProfile.name}

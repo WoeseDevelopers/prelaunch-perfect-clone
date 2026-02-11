@@ -29,7 +29,7 @@ const CareerModal = ({ career, open, onOpenChange }: CareerModalProps) => {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-sm rounded-3xl p-5 overflow-hidden gap-0 border-0 bg-card">
-        <div className="rounded-2xl border-t-4 overflow-hidden bg-card" style={{ borderTopColor: profile.color }}>
+        <div className="rounded-2xl border border-border overflow-hidden bg-card">
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
           <DialogTitle className="text-2xl font-extrabold text-foreground leading-tight" style={{ fontFamily: "'Syne', sans-serif" }}>
@@ -62,74 +62,76 @@ const CareerModal = ({ career, open, onOpenChange }: CareerModalProps) => {
 
         {/* Related subtypes - clickable to expand inline */}
         <div className="px-6 pb-6">
-          <div className="flex items-center justify-center gap-5">
-            {career.relatedSubtypes.map((sub) => {
-              const subProfile = riasecProfiles[sub.type];
-              const isExpanded = expandedType === sub.type;
-              return (
-                <button
-                  key={sub.label}
-                  className={`flex flex-col items-center gap-1.5 cursor-pointer transition-transform ${isExpanded ? 'scale-110' : 'hover:scale-110'}`}
-                  onClick={() => setExpandedType(isExpanded ? null : sub.type)}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: subProfile.color }}
+          <div className="flex items-start gap-4">
+            {/* Icons column */}
+            <div className={`flex ${expandedType ? 'flex-col gap-4' : 'flex-row gap-5 w-full justify-center'} items-center shrink-0 transition-all`}>
+              {career.relatedSubtypes.map((sub) => {
+                const subProfile = riasecProfiles[sub.type];
+                const isExpanded = expandedType === sub.type;
+                return (
+                  <button
+                    key={sub.label}
+                    className={`flex flex-col items-center gap-1.5 cursor-pointer transition-transform ${isExpanded ? 'scale-110' : 'hover:scale-110'}`}
+                    onClick={() => setExpandedType(isExpanded ? null : sub.type)}
                   >
-                    <RiasecIcon name={subProfile.icon} size={22} className="text-white" />
-                  </div>
-                  <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground text-center max-w-[70px] leading-tight">
-                    {sub.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: subProfile.color }}
+                    >
+                      <RiasecIcon name={subProfile.icon} size={22} className="text-white" />
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground text-center max-w-[70px] leading-tight">
+                      {sub.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
-          {/* Collapsible inline section */}
-          {expandedType && (() => {
-            const ep = riasecProfiles[expandedType];
-            return (
-              <div
-                className="mt-4 rounded-xl border-2 overflow-hidden animate-fade-in-up"
-                style={{ borderColor: ep.color }}
-              >
-                <div className="px-4 pt-4 pb-3 flex items-center gap-3">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: ep.color }}
-                  >
-                    <RiasecIcon name={ep.icon} size={20} className="text-white" />
+            {/* Collapsible section - slides to the right */}
+            {expandedType && (() => {
+              const ep = riasecProfiles[expandedType];
+              return (
+                <div
+                  className="flex-1 rounded-xl border border-border overflow-hidden animate-fade-in-up"
+                >
+                  <div className="px-4 pt-4 pb-3 flex items-center gap-3">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: ep.color }}
+                    >
+                      <RiasecIcon name={ep.icon} size={20} className="text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-extrabold text-foreground">{ep.name}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Tipo {expandedType}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-extrabold text-foreground">{ep.name}</p>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Tipo {expandedType}
+                  <div className="px-4 pb-3">
+                    <p className="text-xs text-muted-foreground leading-relaxed">{ep.description}</p>
+                  </div>
+                  <div className="px-4 pb-4">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                      Subtipos
                     </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {ep.subdivisions.map((s) => (
+                        <span
+                          key={s}
+                          className="rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-wide text-white"
+                          style={{ backgroundColor: ep.color }}
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                <div className="px-4 pb-3">
-                  <p className="text-xs text-muted-foreground leading-relaxed">{ep.description}</p>
-                </div>
-                <div className="px-4 pb-4">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
-                    Subtipos
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {ep.subdivisions.map((s) => (
-                      <span
-                        key={s}
-                        className="rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-wide text-white"
-                        style={{ backgroundColor: ep.color }}
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
+              );
+            })()}
+          </div>
         </div>
         </div>
       </DialogContent>

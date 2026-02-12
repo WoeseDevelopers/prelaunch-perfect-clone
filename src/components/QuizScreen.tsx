@@ -60,7 +60,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   };
 
   return (
-    <div className="min-h-screen px-4 py-4 flex flex-col items-center items-start">
+    <div className="min-h-screen px-4 pt-4 pb-40 flex flex-col items-center">
       <div className="w-full max-w-[400px]">
         {/* Header */}
         <div className="flex items-center justify-between mb-2 animate-fade-in-up">
@@ -196,60 +196,65 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             </div>
           </div>
         </div>
-        {/* Fichas tracker */}
-        {totalAnswered > 0 && (
-          <div className="mt-6 rounded-2xl bg-card border border-border p-4 animate-fade-in-up">
-            <p
-              className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 text-center"
-              style={{ fontFamily: "'Syne', sans-serif" }}
-            >
-              Suas Fichas
-            </p>
-            <div className="grid grid-cols-6 gap-2">
-              {(['R', 'I', 'A', 'S', 'E', 'C'] as RiasecType[]).map((type) => {
-                const profile = riasecProfiles[type];
-                const count = scores[type];
-                return (
-                  <div key={type} className="flex flex-col items-center gap-1.5">
-                    <div
-                      className="relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
-                      style={{
-                        backgroundColor: count > 0 ? profile.color : 'transparent',
-                        border: `2px solid ${profile.color}`,
-                        opacity: count > 0 ? 1 : 0.3,
-                        transform: count > 0 ? 'scale(1)' : 'scale(0.85)',
-                      }}
-                    >
-                      <RiasecIcon
-                        name={profile.icon}
-                        className={count > 0 ? "text-white" : "text-muted-foreground"}
-                        size={18}
-                      />
-                      {count > 0 && (
-                        <span
-                          className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-foreground text-background text-[10px] font-bold flex items-center justify-center"
-                          style={{ fontFamily: "'Syne', sans-serif" }}
-                        >
-                          {count}
-                        </span>
-                      )}
+      </div>
+
+      {/* Fichas tracker - Fixed at bottom */}
+      {totalAnswered > 0 && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/95 to-transparent z-50 flex justify-center pointer-events-none">
+          <div className="w-full max-w-[400px] pointer-events-auto">
+            <div className="rounded-2xl bg-card border border-border p-4 shadow-lg animate-fade-in-up">
+              <p
+                className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 text-center"
+                style={{ fontFamily: "'Syne', sans-serif" }}
+              >
+                Suas Fichas
+              </p>
+              <div className="grid grid-cols-6 gap-2">
+                {(['R', 'I', 'A', 'S', 'E', 'C'] as RiasecType[]).map((type) => {
+                  const profile = riasecProfiles[type];
+                  const count = scores[type];
+                  return (
+                    <div key={type} className="flex flex-col items-center gap-1.5">
+                      <div
+                        className="relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+                        style={{
+                          backgroundColor: count > 0 ? profile.color : 'transparent',
+                          border: `2px solid ${profile.color}`,
+                          opacity: count > 0 ? 1 : 0.3,
+                          transform: count > 0 ? 'scale(1)' : 'scale(0.85)',
+                        }}
+                      >
+                        <RiasecIcon
+                          name={profile.icon}
+                          className={count > 0 ? "text-white" : "text-muted-foreground"}
+                          size={18}
+                        />
+                        {count > 0 && (
+                          <span
+                            className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-foreground text-background text-[10px] font-bold flex items-center justify-center"
+                            style={{ fontFamily: "'Syne', sans-serif" }}
+                          >
+                            {count}
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        className="text-[9px] font-bold uppercase tracking-wide"
+                        style={{
+                          color: count > 0 ? profile.color : 'hsl(var(--muted-foreground))',
+                          fontFamily: "'Syne', sans-serif",
+                        }}
+                      >
+                        {profile.name.slice(0, 3)}
+                      </span>
                     </div>
-                    <span
-                      className="text-[9px] font-bold uppercase tracking-wide"
-                      style={{
-                        color: count > 0 ? profile.color : 'hsl(var(--muted-foreground))',
-                        fontFamily: "'Syne', sans-serif",
-                      }}
-                    >
-                      {profile.name.slice(0, 3)}
-                    </span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

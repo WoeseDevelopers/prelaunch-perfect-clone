@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { riasecProfiles, type RiasecType, type Question, computeSubtypeCounts } from "@/data/quizQuestions";
+import { riasecProfiles, type RiasecType } from "@/data/quizQuestions";
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 import CareerModal from "@/components/CareerModal";
@@ -25,26 +25,17 @@ const matchLevelConfig: Record<MatchLevel, { bg: string; text: string; label: st
 const subTabOrder: MatchLevel[] = ['Excelente', 'Bom', 'Atenção', 'Refazer'];
 
 interface CareersTabProps {
-  answers: Record<number, 'yes' | 'no'>;
-  sessionQuestions: Question[];
+  perTypeSubtypeCounts: Record<string, number>;
   onRestart?: () => void;
 }
 
-const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) => {
+const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<MatchLevel>('Excelente');
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const { groupedCareers, perTypeSubtypeCounts } = useMemo(() => {
-    // Build per-type subtype counts — SAME source of truth as Tipos tab
-    const perTypeSubtypeCounts: Record<string, number> = {};
-    for (const type of Object.keys(riasecProfiles) as RiasecType[]) {
-      const typeCounts = computeSubtypeCounts(sessionQuestions, answers, type);
-      for (const [sub, count] of Object.entries(typeCounts)) {
-        perTypeSubtypeCounts[`${type}_${sub}`] = count;
-      }
-    }
+  const groupedCareers = useMemo(() => {
 
     const scored = careerDetails.map((career, idx) => {
       // Match using type-specific counts (identical to Tipos tab)
@@ -82,8 +73,8 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
       grouped[item.level].push(item);
     }
 
-    return { groupedCareers: grouped, perTypeSubtypeCounts };
-  }, [answers, sessionQuestions]);
+    return grouped;
+  }, [perTypeSubtypeCounts]);
 
   const currentCareers = groupedCareers[activeSubTab];
   const displayCareers = currentCareers.slice(0, visibleCount);

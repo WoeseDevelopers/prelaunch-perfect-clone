@@ -141,13 +141,14 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
 
             {/* Drawer area — expands BELOW the 500px fixed area */}
             <div
-              className="transition-all duration-[400ms] ease-in-out"
               style={{
-                maxHeight: revealed ? '160px' : '0px',
+                display: 'grid',
+                gridTemplateRows: revealed ? '1fr' : '0fr',
                 opacity: revealed ? 1 : 0,
-                overflow: 'hidden',
+                transition: 'grid-template-rows 500ms cubic-bezier(0.33, 1, 0.68, 1), opacity 400ms ease',
               }}
             >
+              <div style={{ overflow: 'hidden' }}>
               <div className="flex gap-[2px]">
                 <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card border-r border-border/50">
                   <div
@@ -177,6 +178,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     {noProfile.name}
                   </span>
                 </div>
+              </div>
               </div>
             </div>
           </div>

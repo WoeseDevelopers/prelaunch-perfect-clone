@@ -34,6 +34,7 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<MatchLevel>('Excelente');
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const { groupedCareers, allSubtypeCounts } = useMemo(() => {
     const allSubtypeCounts = computeSubtypeCounts(sessionQuestions, answers);
@@ -82,7 +83,14 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
   }, [answers, sessionQuestions]);
 
   const currentCareers = groupedCareers[activeSubTab];
-  const displayCareers = currentCareers.slice(0, 6);
+  const displayCareers = currentCareers.slice(0, visibleCount);
+  const hasMore = currentCareers.length > visibleCount;
+
+  // Reset visible count when switching sub-tabs
+  const handleSubTabChange = (level: MatchLevel) => {
+    setActiveSubTab(level);
+    setVisibleCount(6);
+  };
 
   return (
     <div className="space-y-5 animate-fade-in-up-delay">
@@ -96,7 +104,7 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
           return (
             <button
               key={level}
-              onClick={() => setActiveSubTab(level)}
+              onClick={() => handleSubTabChange(level)}
               className="flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-bold uppercase tracking-wide transition-all duration-300 whitespace-nowrap shrink-0"
               style={{
                 backgroundColor: isActive ? config.bg : 'transparent',
@@ -157,7 +165,7 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
         </Card>
       )}
 
-      <div className="space-y-[30px]">
+      <div className="grid grid-cols-2 gap-4">
         {displayCareers.map(({ career, matchCount }) => {
           const level = getMatchLevel(matchCount);
           const levelStyle = matchLevelConfig[level];
@@ -173,15 +181,15 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
             >
               <CardContent className="p-0">
                 {/* Header */}
-                <div className="px-5 pt-5 pb-3 flex items-start justify-between gap-3">
+                <div className="px-4 pt-4 pb-2 flex items-start justify-between gap-2">
                   <h3
-                    className="text-xl font-extrabold text-foreground leading-tight"
+                    className="text-base font-extrabold text-foreground leading-tight"
                     style={{ fontFamily: "'Syne', sans-serif" }}
                   >
                     {career.name}
                   </h3>
                   <span
-                    className="shrink-0 rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wide"
+                    className="shrink-0 rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wide"
                     style={{ backgroundColor: levelStyle.bg, color: levelStyle.text }}
                   >
                     {level}
@@ -189,53 +197,53 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
                 </div>
 
                 {/* Description */}
-                <div className="px-5 pb-3">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
+                <div className="px-4 pb-2">
+                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
                     {career.description}
                   </p>
                 </div>
 
                 {/* Strengths */}
-                <div className="mx-5 rounded-xl overflow-hidden border border-border/50 mb-2">
-                  <div className="px-4 py-2 border-l-4" style={{ borderLeftColor: 'hsl(142, 71%, 45%)' }}>
-                    <p className="text-xs font-bold text-foreground mb-1">Ponto forte</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                <div className="mx-4 rounded-xl overflow-hidden border border-border/50 mb-1.5">
+                  <div className="px-3 py-1.5 border-l-4" style={{ borderLeftColor: 'hsl(142, 71%, 45%)' }}>
+                    <p className="text-[10px] font-bold text-foreground mb-0.5">Ponto forte</p>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
                       {career.strengths}
                     </p>
                   </div>
                 </div>
 
                 {/* Weaknesses */}
-                <div className="mx-5 rounded-xl overflow-hidden border border-border/50 mb-4">
-                  <div className="px-4 py-2 border-l-4" style={{ borderLeftColor: 'hsl(0, 84%, 60%)' }}>
-                    <p className="text-xs font-bold text-foreground mb-1">Ponto fraco</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                <div className="mx-4 rounded-xl overflow-hidden border border-border/50 mb-3">
+                  <div className="px-3 py-1.5 border-l-4" style={{ borderLeftColor: 'hsl(0, 84%, 60%)' }}>
+                    <p className="text-[10px] font-bold text-foreground mb-0.5">Ponto fraco</p>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
                       {career.weaknesses}
                     </p>
                   </div>
                 </div>
 
                 {/* Footer: 4 subtype icons */}
-                <div className="px-5 pb-5">
-                  <div className="flex items-center justify-center gap-5">
+                <div className="px-4 pb-4">
+                  <div className="flex items-center justify-center gap-3">
                     {career.relatedSubtypes.map((sub) => {
                       const subProfile = riasecProfiles[sub.type];
                       const count = allSubtypeCounts[sub.label] || 0;
                       return (
-                        <div key={sub.label} className="flex flex-col items-center gap-1.5">
+                        <div key={sub.label} className="flex flex-col items-center gap-1">
                           <div className="relative">
                             <div
-                              className="w-12 h-12 rounded-full flex items-center justify-center"
+                              className="w-9 h-9 rounded-full flex items-center justify-center"
                               style={{ backgroundColor: subProfile.color }}
                             >
-                              <RiasecIcon name={subProfile.icon} size={22} className="text-white" />
+                              <RiasecIcon name={subProfile.icon} size={16} className="text-white" />
                             </div>
                             {count > 0 && (
                               <span
-                                className="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full text-[9px] font-bold"
+                                className="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full text-[8px] font-bold"
                                 style={{
-                                  width: '20px',
-                                  height: '20px',
+                                  width: '16px',
+                                  height: '16px',
                                   backgroundColor: '#fff',
                                   color: subProfile.color,
                                   border: `2px solid ${subProfile.color}`,
@@ -245,7 +253,7 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
                               </span>
                             )}
                           </div>
-                          <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground text-center max-w-[70px] leading-tight">
+                          <span className="text-[7px] font-bold uppercase tracking-wide text-muted-foreground text-center max-w-[50px] leading-tight">
                             {sub.label}
                           </span>
                         </div>
@@ -258,6 +266,18 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
           );
         })}
       </div>
+
+      {/* Show more button */}
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <button
+            onClick={() => setVisibleCount((prev) => prev + 6)}
+            className="rounded-full px-6 py-3 text-xs font-bold uppercase tracking-wide border-2 border-border hover:border-primary/50 text-muted-foreground hover:text-foreground transition-all duration-300"
+          >
+            Mostrar mais profissões
+          </button>
+        </div>
+      )}
 
       <CareerModal
         career={selectedCareer}

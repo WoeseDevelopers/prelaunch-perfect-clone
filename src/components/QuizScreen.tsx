@@ -178,29 +178,29 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
               <div style={{ overflow: 'hidden' }}>
               <div className="flex gap-[2px]">
                 <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card border-r border-border/50">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: yesProfile.color }}
-                  >
-                    <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
-                  </div>
                   <span
-                    className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    className="rounded-full px-4 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white"
+                    style={{ backgroundColor: yesProfile.color, fontFamily: "'Syne', sans-serif" }}
+                  >
+                    {question.yesLabel}
+                  </span>
+                  <span
+                    className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
                     {yesProfile.name}
                   </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card">
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: noProfile.color }}
-                  >
-                    <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
-                  </div>
                   <span
-                    className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    className="rounded-full px-4 py-1.5 text-xs font-extrabold uppercase tracking-wide text-white"
+                    style={{ backgroundColor: noProfile.color, fontFamily: "'Syne', sans-serif" }}
+                  >
+                    {question.noLabel}
+                  </span>
+                  <span
+                    className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground"
+                    style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
                     {noProfile.name}
                   </span>

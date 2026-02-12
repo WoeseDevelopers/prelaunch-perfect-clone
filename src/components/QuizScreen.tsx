@@ -163,7 +163,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 opacity: revealed ? 1 : 0,
                 transition: revealed
                   ? 'grid-template-rows 500ms cubic-bezier(0.33, 1, 0.68, 1), opacity 400ms ease'
-                  : 'grid-template-rows 0ms, opacity 0ms',
+                  : 'grid-template-rows 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               <div style={{ overflow: 'hidden' }}>

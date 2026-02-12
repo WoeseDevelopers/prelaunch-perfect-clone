@@ -177,7 +177,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             >
               <div style={{ overflow: 'hidden' }}>
               <div className="flex gap-[2px]">
-                <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card border-r border-border/50">
+                <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card border-r border-border/50">
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: yesProfile.color }}
@@ -185,13 +185,13 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
                   </div>
                   <span
-                    className="rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white"
-                    style={{ backgroundColor: yesProfile.color, fontFamily: "'Syne', sans-serif" }}
+                    className="text-xs font-extrabold uppercase tracking-wide"
+                    style={{ color: yesProfile.color, fontFamily: "'Syne', sans-serif" }}
                   >
-                    {question.yesLabel}
+                    {yesProfile.name}
                   </span>
                 </div>
-                <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card">
+                <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: noProfile.color }}
@@ -199,10 +199,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
                   </div>
                   <span
-                    className="rounded-full px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white"
-                    style={{ backgroundColor: noProfile.color, fontFamily: "'Syne', sans-serif" }}
+                    className="text-xs font-extrabold uppercase tracking-wide"
+                    style={{ color: noProfile.color, fontFamily: "'Syne', sans-serif" }}
                   >
-                    {question.noLabel}
+                    {noProfile.name}
                   </span>
                 </div>
               </div>

@@ -1,5 +1,17 @@
 export type RiasecType = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 
+/** Compute per-subtype counts for a given RIASEC type and its total score.
+ *  Points are distributed cyclically across subdivisions. */
+export function computeSubtypeCounts(type: RiasecType, score: number): Record<string, number> {
+  const profile = riasecProfiles[type];
+  const result: Record<string, number> = {};
+  for (let i = 0; i < score; i++) {
+    const sub = profile.subdivisions[i % profile.subdivisions.length];
+    result[sub] = (result[sub] || 0) + 1;
+  }
+  return result;
+}
+
 export interface Question {
   id: number;
   text: string;

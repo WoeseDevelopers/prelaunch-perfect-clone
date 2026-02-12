@@ -67,16 +67,16 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         {/* Progress bar */}
         <Progress value={progress} className="h-2 bg-secondary mb-0" />
 
-        {/* Outer white border frame */}
+        {/* Outer white border frame - anchored to top */}
         <div
           key={question.id}
           className="mt-8 rounded-3xl bg-card shadow-sm animate-fade-in-up"
-          style={{ padding: '20px' }}
+          style={{ padding: '20px', transformOrigin: 'top center' }}
         >
-          {/* Inner card */}
+          {/* Inner card - overflow hidden, expands downward */}
           <div
-            className="rounded-2xl border border-border overflow-hidden flex flex-col bg-card transition-all duration-500 ease-in-out"
-            style={{ minHeight: '500px' }}
+            className="rounded-2xl border border-border overflow-hidden flex flex-col bg-card transition-all duration-[400ms] ease-in-out"
+            style={{ minHeight: '500px', transformOrigin: 'top center' }}
           >
             {/* "Pergunta" fixed at top */}
             <div className="pt-5 px-5">

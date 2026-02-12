@@ -186,7 +186,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                   </div>
                   <span
                     className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: yesProfile.color, fontFamily: "'Syne', sans-serif" }}
+                    style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
                     {yesProfile.name}
                   </span>
@@ -200,7 +200,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                   </div>
                   <span
                     className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: noProfile.color, fontFamily: "'Syne', sans-serif" }}
+                    style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
                     {noProfile.name}
                   </span>

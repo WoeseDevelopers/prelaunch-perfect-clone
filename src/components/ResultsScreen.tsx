@@ -168,11 +168,11 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
                       )}
                     </div>
                     <div className="ml-auto flex items-center gap-2 shrink-0">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-3 py-1 text-sm font-bold text-white">
-                        <IconCheck className="h-4 w-4" />{String(sim[type]).padStart(2, '0')}
+                      <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
+                        <IconCheck className="h-4 w-4 text-emerald-600" />{String(sim[type]).padStart(2, '0')}
                       </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-1 text-sm font-bold text-white">
-                        <IconX className="h-4 w-4" />{String(nao[type]).padStart(2, '0')}
+                      <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
+                        <IconX className="h-4 w-4 text-red-500" />{String(nao[type]).padStart(2, '0')}
                       </span>
                       <span className="inline-flex items-center rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
                         {String(score).padStart(2, '0')}

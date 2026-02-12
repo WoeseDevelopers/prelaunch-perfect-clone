@@ -53,6 +53,14 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
   const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
+  // Activate first N subdivisions for each type based on score
+  for (const type of Object.keys(scores) as RiasecType[]) {
+    const profile = riasecProfiles[type];
+    const count = scores[type];
+    for (let i = 0; i < Math.min(count, profile.subdivisions.length); i++) {
+      activatedLabels[type][profile.subdivisions[i]] = 1;
+    }
+  }
   const maxScore = 18;
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({

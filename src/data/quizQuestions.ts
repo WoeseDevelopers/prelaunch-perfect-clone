@@ -1,12 +1,20 @@
 export type RiasecType = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 
-/** Compute per-subtype counts for a given RIASEC type and its total score.
- *  Points are distributed cyclically across subdivisions. */
-export function computeSubtypeCounts(type: RiasecType, score: number): Record<string, number> {
-  const profile = riasecProfiles[type];
+/** Compute per-subtype counts from actual answered questions.
+ *  Each question carries its own yesSub/noSub assigned at session start. */
+export function computeSubtypeCounts(
+  questions: Question[],
+  answers: Record<number, 'yes' | 'no'>,
+  filterType?: RiasecType
+): Record<string, number> {
   const result: Record<string, number> = {};
-  for (let i = 0; i < score; i++) {
-    const sub = profile.subdivisions[i % profile.subdivisions.length];
+  for (const q of questions) {
+    const ans = answers[q.id];
+    if (!ans) continue;
+    const sub = ans === 'yes' ? q.yesSub : q.noSub;
+    const type = ans === 'yes' ? q.yesType : q.noType;
+    if (!sub) continue;
+    if (filterType && type !== filterType) continue;
     result[sub] = (result[sub] || 0) + 1;
   }
   return result;
@@ -17,6 +25,8 @@ export interface Question {
   text: string;
   yesType: RiasecType;
   noType: RiasecType;
+  yesSub?: string;
+  noSub?: string;
 }
 
 /** All 300 questions from the question bank */
@@ -354,7 +364,16 @@ export function getRandomQuestions(): Question[] {
     selected.push(...shuffled.slice(0, perPair));
   }
 
-  return shuffle(selected);
+  // Assign random subtypes to each selected question
+  return shuffle(selected).map((q) => ({
+    ...q,
+    yesSub: randomPick(riasecProfiles[q.yesType].subdivisions),
+    noSub: randomPick(riasecProfiles[q.noType].subdivisions),
+  }));
+}
+
+function randomPick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export interface RiasecProfile {

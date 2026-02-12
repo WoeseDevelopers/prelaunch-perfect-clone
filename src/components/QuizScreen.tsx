@@ -155,48 +155,50 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
               </div>
             </div>
 
-            {/* Drawer area — expands BELOW the 500px fixed area */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateRows: revealed ? '1fr' : '0fr',
-                opacity: revealed ? 1 : 0,
-                transition: 'grid-template-rows 500ms cubic-bezier(0.33, 1, 0.68, 1), opacity 400ms ease',
-              }}
-            >
-              <div style={{ overflow: 'hidden' }}>
-              <div className="flex gap-[2px]">
-                <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card border-r border-border/50">
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: yesProfile.color }}
-                  >
-                    <RiasecIcon name={yesProfile.icon} className="text-white" size={31} />
+            {/* Drawer area — only rendered after answer */}
+            {revealed && (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateRows: '1fr',
+                  opacity: 1,
+                  animation: 'fade-in 0.4s ease-out',
+                }}
+              >
+                <div style={{ overflow: 'hidden' }}>
+                <div className="flex gap-[2px]">
+                  <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card border-r border-border/50">
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: yesProfile.color }}
+                    >
+                      <RiasecIcon name={yesProfile.icon} className="text-white" size={31} />
+                    </div>
+                    <span
+                      className="text-xs font-extrabold uppercase tracking-wide"
+                      style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    >
+                      {question.yesSub || yesProfile.name}
+                    </span>
                   </div>
-                  <span
-                    className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                  >
-                    {question.yesSub || yesProfile.name}
-                  </span>
+                  <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: noProfile.color }}
+                    >
+                      <RiasecIcon name={noProfile.icon} className="text-white" size={31} />
+                    </div>
+                    <span
+                      className="text-xs font-extrabold uppercase tracking-wide"
+                      style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                    >
+                      {question.noSub || noProfile.name}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
-                  <div
-                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: noProfile.color }}
-                  >
-                    <RiasecIcon name={noProfile.icon} className="text-white" size={31} />
-                  </div>
-                  <span
-                    className="text-xs font-extrabold uppercase tracking-wide"
-                    style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
-                  >
-                    {question.noSub || noProfile.name}
-                  </span>
                 </div>
               </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

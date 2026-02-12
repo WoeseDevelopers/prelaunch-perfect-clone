@@ -40,16 +40,9 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
     const allSubtypeCounts = computeSubtypeCounts(sessionQuestions, answers);
 
 
-    // Compute per-type totals: does the user have ANY subtype points in each RIASEC type?
-    const typeHasPoints: Record<RiasecType, boolean> = { R: false, I: false, A: false, S: false, E: false, C: false };
-    for (const type of Object.keys(riasecProfiles) as RiasecType[]) {
-      const subs = riasecProfiles[type].subdivisions;
-      typeHasPoints[type] = subs.some((sub) => (allSubtypeCounts[sub] || 0) > 0);
-    }
-
     const scored = careerDetails.map((career, idx) => {
-      // Count how many of the career's 4 subtype TYPES the user has accumulated points in
-      const matchCount = career.relatedSubtypes.filter((sub) => typeHasPoints[sub.type]).length;
+      // Count how many of the career's 4 specific subtypes the user has accumulated points in
+      const matchCount = career.relatedSubtypes.filter((sub) => (allSubtypeCounts[sub.label] || 0) > 0).length;
       const subtypeSum = career.relatedSubtypes.reduce((sum, sub) => sum + (allSubtypeCounts[sub.label] || 0), 0);
       const level = getMatchLevel(matchCount);
       return { career, matchCount, subtypeSum, idx, level };

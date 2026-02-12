@@ -22,8 +22,8 @@ const SubtypeModal = ({ riasecType, open, onOpenChange, subtypeScores }: Subtype
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm rounded-2xl p-0 overflow-hidden gap-0 border-t-4" style={{ borderTopColor: profile.color }}>
-        <div className="px-6 pt-6 pb-4 flex items-center gap-3">
+      <DialogContent className="max-w-sm rounded-2xl p-0 overflow-hidden gap-0 border-t-4 [&>button]:top-6 [&>button]:right-6" style={{ borderTopColor: profile.color }}>
+        <div className="px-6 pt-6 pb-4 pr-14 flex items-center gap-3">
           <div
             className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
             style={{ backgroundColor: profile.color }}
@@ -46,7 +46,7 @@ const SubtypeModal = ({ riasecType, open, onOpenChange, subtypeScores }: Subtype
           </div>
         </div>
 
-        <div className="px-6 pb-3">
+        <div className="px-6" style={{ paddingBottom: '30px' }}>
           <p className="text-sm text-muted-foreground leading-relaxed">
             {profile.description}
           </p>

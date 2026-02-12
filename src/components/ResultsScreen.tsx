@@ -55,9 +55,15 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
   const [activeTab, setActiveTab] = useState<'tipos' | 'profissoes'>('profissoes');
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
+  // Single source of truth: per-type subtype counts used by BOTH tabs
   const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
+  const perTypeSubtypeCounts: Record<string, number> = {};
   for (const type of Object.keys(scores) as RiasecType[]) {
-    Object.assign(activatedLabels[type], computeSubtypeCounts(sessionQuestions, answers, type));
+    const typeCounts = computeSubtypeCounts(sessionQuestions, answers, type);
+    Object.assign(activatedLabels[type], typeCounts);
+    for (const [sub, count] of Object.entries(typeCounts)) {
+      perTypeSubtypeCounts[`${type}_${sub}`] = count;
+    }
   }
   const maxScore = 18;
 
@@ -310,7 +316,7 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
             </div>
           </>
         ) : (
-          <CareersTab answers={answers} sessionQuestions={sessionQuestions} onRestart={onRestart} />
+          <CareersTab perTypeSubtypeCounts={perTypeSubtypeCounts} onRestart={onRestart} />
         )}
 
         {/* Actions */}

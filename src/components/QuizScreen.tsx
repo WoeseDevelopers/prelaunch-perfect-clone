@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
-import { type RiasecType, getRandomQuestions, riasecProfiles } from "@/data/quizQuestions";
+import { type RiasecType, getRandomQuestions, riasecProfiles, computeSubtypeCounts } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
 import SubtypeModal from "@/components/SubtypeModal";
 import { cn } from "@/lib/utils";
@@ -273,18 +273,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         riasecType={selectedType}
         open={!!selectedType}
         onOpenChange={(open) => !open && setSelectedType(null)}
-        subtypeScores={(() => {
-          if (!selectedType) return {};
-          const profile = riasecProfiles[selectedType];
-          const count = scores[selectedType];
-          const result: Record<string, number> = {};
-          // Shuffle subdivisions deterministically per session, then activate first N
-          const subs = [...profile.subdivisions];
-          for (let i = 0; i < Math.min(count, subs.length); i++) {
-            result[subs[i]] = 1;
-          }
-          return result;
-        })()}
+        subtypeScores={selectedType ? computeSubtypeCounts(selectedType, scores[selectedType]) : {}}
       />
     </div>
   );

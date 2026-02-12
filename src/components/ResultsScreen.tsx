@@ -10,7 +10,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { allQuestions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
+import { allQuestions, riasecProfiles, type RiasecType, computeSubtypeCounts } from "@/data/quizQuestions";
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 import CareerModal from "@/components/CareerModal";
@@ -53,13 +53,8 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
   const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
-  // Activate first N subdivisions for each type based on score
   for (const type of Object.keys(scores) as RiasecType[]) {
-    const profile = riasecProfiles[type];
-    const count = scores[type];
-    for (let i = 0; i < Math.min(count, profile.subdivisions.length); i++) {
-      activatedLabels[type][profile.subdivisions[i]] = 1;
-    }
+    Object.assign(activatedLabels[type], computeSubtypeCounts(type, scores[type]));
   }
   const maxScore = 18;
 

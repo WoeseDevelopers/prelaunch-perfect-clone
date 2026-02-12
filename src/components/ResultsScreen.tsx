@@ -52,7 +52,7 @@ function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
 const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenProps) => {
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'tipos' | 'profissoes'>('tipos');
+  const [activeTab, setActiveTab] = useState<'tipos' | 'profissoes'>('profissoes');
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
   const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
@@ -134,16 +134,6 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
         {/* Tab switcher */}
         <div className="flex rounded-full border border-border/50 p-1 bg-secondary/30 animate-fade-in-up-delay">
           <button
-            onClick={() => setActiveTab('tipos')}
-            className={`flex-1 rounded-full py-2.5 text-sm font-bold transition-all ${
-              activeTab === 'tipos'
-                ? 'bg-[hsl(var(--trampos-purple))] text-white shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Tipos
-          </button>
-          <button
             onClick={() => setActiveTab('profissoes')}
             className={`flex-1 rounded-full py-2.5 text-sm font-bold transition-all ${
               activeTab === 'profissoes'
@@ -152,6 +142,16 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
             }`}
           >
             Profissões
+          </button>
+          <button
+            onClick={() => setActiveTab('tipos')}
+            className={`flex-1 rounded-full py-2.5 text-sm font-bold transition-all ${
+              activeTab === 'tipos'
+                ? 'bg-[hsl(var(--trampos-purple))] text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Tipos
           </button>
         </div>
 
@@ -310,7 +310,7 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
             </div>
           </>
         ) : (
-          <CareersTab answers={answers} sessionQuestions={sessionQuestions} />
+          <CareersTab answers={answers} sessionQuestions={sessionQuestions} onRestart={onRestart} />
         )}
 
         {/* Actions */}

@@ -179,10 +179,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
               <div className="flex gap-[2px]">
                 <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card border-r border-border/50">
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: yesProfile.color }}
                   >
-                    <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
+                    <RiasecIcon name={yesProfile.icon} className="text-white" size={31} />
                   </div>
                   <span
                     className="text-xs font-extrabold uppercase tracking-wide"
@@ -193,10 +193,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: noProfile.color }}
                   >
-                    <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
+                    <RiasecIcon name={noProfile.icon} className="text-white" size={31} />
                   </div>
                   <span
                     className="text-xs font-extrabold uppercase tracking-wide"

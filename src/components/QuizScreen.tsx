@@ -3,6 +3,7 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
 import { type RiasecType, questions, riasecProfiles } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
+import SubtypeModal from "@/components/SubtypeModal";
 import { cn } from "@/lib/utils";
 
 interface QuizScreenProps {
@@ -22,18 +23,31 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
   const yesProfile = riasecProfiles[question.yesType];
   const noProfile = riasecProfiles[question.noType];
 
-  // Compute RIASEC scores from answers so far
-  const scores = useMemo(() => {
-    const s: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+  // Compute subtype scores from answers
+  const subtypeScores = useMemo(() => {
+    const s: Record<string, number> = {};
     for (const q of questions) {
       const ans = answers[q.id];
-      if (ans === 'yes') s[q.yesType]++;
-      else if (ans === 'no') s[q.noType]++;
+      if (ans === 'yes') s[q.yesLabel] = (s[q.yesLabel] || 0) + 1;
+      else if (ans === 'no') s[q.noLabel] = (s[q.noLabel] || 0) + 1;
     }
     return s;
   }, [answers]);
 
+  // Type score = sum of its subtypes
+  const scores = useMemo(() => {
+    const s: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+    for (const type of ['R', 'I', 'A', 'S', 'E', 'C'] as RiasecType[]) {
+      const profile = riasecProfiles[type];
+      for (const sub of profile.subdivisions) {
+        s[type] += subtypeScores[sub] || 0;
+      }
+    }
+    return s;
+  }, [subtypeScores]);
+
   const totalAnswered = Object.keys(answers).length;
+  const [selectedType, setSelectedType] = useState<RiasecType | null>(null);
 
   const handleAnswer = (value: 'yes' | 'no') => {
     if (revealed) return;
@@ -214,7 +228,11 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                   const profile = riasecProfiles[type];
                   const count = scores[type];
                   return (
-                    <div key={type} className="flex flex-col items-center gap-1.5">
+                    <button
+                      key={type}
+                      className="flex flex-col items-center gap-1.5 cursor-pointer"
+                      onClick={() => setSelectedType(type)}
+                    >
                       <div
                         className="relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
                         style={{
@@ -247,7 +265,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                       >
                         {profile.name.slice(0, 3)}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -255,6 +273,13 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           </div>
         </div>
       )}
+
+      <SubtypeModal
+        riasecType={selectedType}
+        open={!!selectedType}
+        onOpenChange={(open) => !open && setSelectedType(null)}
+        subtypeScores={subtypeScores}
+      />
     </div>
   );
 };

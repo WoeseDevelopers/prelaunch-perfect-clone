@@ -10,13 +10,14 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { allQuestions, riasecProfiles, type RiasecType, computeSubtypeCounts } from "@/data/quizQuestions";
+import { allQuestions, riasecProfiles, type RiasecType, type Question, computeSubtypeCounts } from "@/data/quizQuestions";
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 import CareerModal from "@/components/CareerModal";
 
 interface ResultsScreenProps {
   answers: Record<number, 'yes' | 'no'>;
+  sessionQuestions: Question[];
   onRestart: () => void;
 }
 
@@ -47,14 +48,14 @@ function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
   return { sim, nao };
 }
 
-const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
+const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenProps) => {
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
   const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
   for (const type of Object.keys(scores) as RiasecType[]) {
-    Object.assign(activatedLabels[type], computeSubtypeCounts(type, scores[type]));
+    Object.assign(activatedLabels[type], computeSubtypeCounts(sessionQuestions, answers, type));
   }
   const maxScore = 18;
 

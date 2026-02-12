@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
-import { type RiasecType, getRandomQuestions, riasecProfiles, computeSubtypeCounts } from "@/data/quizQuestions";
+import { type RiasecType, type Question, getRandomQuestions, riasecProfiles, computeSubtypeCounts } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
 import SubtypeModal from "@/components/SubtypeModal";
 import { cn } from "@/lib/utils";
 
 interface QuizScreenProps {
-  onComplete: (answers: Record<number, 'yes' | 'no'>) => void;
+  onComplete: (answers: Record<number, 'yes' | 'no'>, questions: Question[]) => void;
   onBack: () => void;
 }
 
@@ -49,7 +49,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
       if (currentIndex < sessionQuestions.length - 1) {
         setCurrentIndex(currentIndex + 1);
       } else {
-        onComplete(newAnswers);
+        onComplete(newAnswers, sessionQuestions);
       }
     }, 1800);
   };
@@ -177,10 +177,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     className="text-xs font-extrabold uppercase tracking-wide"
                     style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
-                    {(() => {
-                      const idx = scores[question.yesType] - (selectedValue === 'yes' ? 1 : 0);
-                      return yesProfile.subdivisions[Math.min(idx, yesProfile.subdivisions.length - 1)] || yesProfile.name;
-                    })()}
+                    {question.yesSub || yesProfile.name}
                   </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
@@ -194,10 +191,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     className="text-xs font-extrabold uppercase tracking-wide"
                     style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
-                    {(() => {
-                      const idx = scores[question.noType] - (selectedValue === 'no' ? 1 : 0);
-                      return noProfile.subdivisions[Math.min(idx, noProfile.subdivisions.length - 1)] || noProfile.name;
-                    })()}
+                    {question.noSub || noProfile.name}
                   </span>
                 </div>
               </div>
@@ -273,7 +267,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         riasecType={selectedType}
         open={!!selectedType}
         onOpenChange={(open) => !open && setSelectedType(null)}
-        subtypeScores={selectedType ? computeSubtypeCounts(selectedType, scores[selectedType]) : {}}
+        subtypeScores={selectedType ? computeSubtypeCounts(sessionQuestions, answers, selectedType) : {}}
       />
     </div>
   );

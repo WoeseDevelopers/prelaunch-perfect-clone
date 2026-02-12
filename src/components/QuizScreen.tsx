@@ -46,11 +46,13 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
 
     setTimeout(() => {
       setRevealed(false);
-      if (currentIndex < sessionQuestions.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        onComplete(newAnswers, sessionQuestions);
-      }
+      setTimeout(() => {
+        if (currentIndex < sessionQuestions.length - 1) {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          onComplete(newAnswers, sessionQuestions);
+        }
+      }, 350);
     }, 1800);
   };
 

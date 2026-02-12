@@ -36,14 +36,24 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
   const [activeSubTab, setActiveSubTab] = useState<MatchLevel>('Excelente');
   const [visibleCount, setVisibleCount] = useState(6);
 
-  const { groupedCareers, allSubtypeCounts } = useMemo(() => {
-    const allSubtypeCounts = computeSubtypeCounts(sessionQuestions, answers);
-
+  const { groupedCareers, perTypeSubtypeCounts } = useMemo(() => {
+    // Build per-type subtype counts — SAME source of truth as Tipos tab
+    const perTypeSubtypeCounts: Record<string, number> = {};
+    for (const type of Object.keys(riasecProfiles) as RiasecType[]) {
+      const typeCounts = computeSubtypeCounts(sessionQuestions, answers, type);
+      for (const [sub, count] of Object.entries(typeCounts)) {
+        perTypeSubtypeCounts[`${type}_${sub}`] = count;
+      }
+    }
 
     const scored = careerDetails.map((career, idx) => {
-      // Count how many of the career's 4 specific subtypes the user has accumulated points in
-      const matchCount = career.relatedSubtypes.filter((sub) => (allSubtypeCounts[sub.label] || 0) > 0).length;
-      const subtypeSum = career.relatedSubtypes.reduce((sum, sub) => sum + (allSubtypeCounts[sub.label] || 0), 0);
+      // Match using type-specific counts (identical to Tipos tab)
+      const matchCount = career.relatedSubtypes.filter(
+        (sub) => (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0) > 0
+      ).length;
+      const subtypeSum = career.relatedSubtypes.reduce(
+        (sum, sub) => sum + (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0), 0
+      );
       const level = getMatchLevel(matchCount);
       return { career, matchCount, subtypeSum, idx, level };
     });
@@ -72,7 +82,7 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
       grouped[item.level].push(item);
     }
 
-    return { groupedCareers: grouped, allSubtypeCounts };
+    return { groupedCareers: grouped, perTypeSubtypeCounts };
   }, [answers, sessionQuestions]);
 
   const currentCareers = groupedCareers[activeSubTab];
@@ -221,7 +231,7 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
                   <div className="flex items-center justify-center gap-3">
                     {career.relatedSubtypes.map((sub) => {
                       const subProfile = riasecProfiles[sub.type];
-                      const count = allSubtypeCounts[sub.label] || 0;
+                      const count = perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0;
                       return (
                         <div key={sub.label} className="flex flex-col items-center gap-1">
                           <div className="relative">

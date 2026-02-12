@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
-import { type RiasecType, questions, riasecProfiles } from "@/data/quizQuestions";
+import { type RiasecType, getRandomQuestions, riasecProfiles } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
 import SubtypeModal from "@/components/SubtypeModal";
 import { cn } from "@/lib/utils";
@@ -12,39 +12,28 @@ interface QuizScreenProps {
 }
 
 const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
+  const [sessionQuestions] = useState(() => getRandomQuestions());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, 'yes' | 'no'>>({});
   const [revealed, setRevealed] = useState(false);
 
-  const question = questions[currentIndex];
-  const progress = ((currentIndex + 1) / questions.length) * 100;
+  const question = sessionQuestions[currentIndex];
+  const progress = ((currentIndex + 1) / sessionQuestions.length) * 100;
   const selectedValue = answers[question.id];
 
   const yesProfile = riasecProfiles[question.yesType];
   const noProfile = riasecProfiles[question.noType];
 
-  // Compute subtype scores from answers
-  const subtypeScores = useMemo(() => {
-    const s: Record<string, number> = {};
-    for (const q of questions) {
-      const ans = answers[q.id];
-      if (ans === 'yes') s[q.yesLabel] = (s[q.yesLabel] || 0) + 1;
-      else if (ans === 'no') s[q.noLabel] = (s[q.noLabel] || 0) + 1;
-    }
-    return s;
-  }, [answers]);
-
-  // Type score = sum of its subtypes
+  // Direct type scoring
   const scores = useMemo(() => {
     const s: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-    for (const type of ['R', 'I', 'A', 'S', 'E', 'C'] as RiasecType[]) {
-      const profile = riasecProfiles[type];
-      for (const sub of profile.subdivisions) {
-        s[type] += subtypeScores[sub] || 0;
-      }
+    for (const q of sessionQuestions) {
+      const ans = answers[q.id];
+      if (ans === 'yes') s[q.yesType] += 1;
+      else if (ans === 'no') s[q.noType] += 1;
     }
     return s;
-  }, [subtypeScores]);
+  }, [answers, sessionQuestions]);
 
   const totalAnswered = Object.keys(answers).length;
   const [selectedType, setSelectedType] = useState<RiasecType | null>(null);
@@ -57,7 +46,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
 
     setTimeout(() => {
       setRevealed(false);
-      if (currentIndex < questions.length - 1) {
+      if (currentIndex < sessionQuestions.length - 1) {
         setCurrentIndex(currentIndex + 1);
       } else {
         onComplete(newAnswers);
@@ -86,7 +75,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             Voltar
           </button>
           <span className="text-sm font-medium text-muted-foreground">
-            {currentIndex + 1} / {questions.length}
+            {currentIndex + 1} / {sessionQuestions.length}
           </span>
         </div>
 
@@ -278,7 +267,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         riasecType={selectedType}
         open={!!selectedType}
         onOpenChange={(open) => !open && setSelectedType(null)}
-        subtypeScores={subtypeScores}
+        subtypeScores={{}}
       />
     </div>
   );

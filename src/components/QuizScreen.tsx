@@ -177,7 +177,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     className="text-xs font-extrabold uppercase tracking-wide"
                     style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
-                    {yesProfile.name}
+                    {(() => {
+                      const idx = scores[question.yesType] - (selectedValue === 'yes' ? 1 : 0);
+                      return yesProfile.subdivisions[Math.min(idx, yesProfile.subdivisions.length - 1)] || yesProfile.name;
+                    })()}
                   </span>
                 </div>
                 <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
@@ -191,7 +194,10 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                     className="text-xs font-extrabold uppercase tracking-wide"
                     style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
-                    {noProfile.name}
+                    {(() => {
+                      const idx = scores[question.noType] - (selectedValue === 'no' ? 1 : 0);
+                      return noProfile.subdivisions[Math.min(idx, noProfile.subdivisions.length - 1)] || noProfile.name;
+                    })()}
                   </span>
                 </div>
               </div>

@@ -10,7 +10,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { questions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
+import { allQuestions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 import CareerModal from "@/components/CareerModal";
@@ -22,36 +22,29 @@ interface ResultsScreenProps {
 
 function calculateScores(answers: Record<number, 'yes' | 'no'>) {
   const scores: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-  questions.forEach((q) => {
-    const answer = answers[q.id];
+  const answeredIds = Object.keys(answers).map(Number);
+  for (const id of answeredIds) {
+    const q = allQuestions.find((q) => q.id === id);
+    if (!q) continue;
+    const answer = answers[id];
     if (answer === 'yes') scores[q.yesType] += 1;
     else if (answer === 'no') scores[q.noType] += 1;
-  });
+  }
   return scores;
 }
 
 function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
   const sim: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   const nao: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-  questions.forEach((q) => {
-    const answer = answers[q.id];
+  const answeredIds = Object.keys(answers).map(Number);
+  for (const id of answeredIds) {
+    const q = allQuestions.find((q) => q.id === id);
+    if (!q) continue;
+    const answer = answers[id];
     if (answer === 'yes') sim[q.yesType] += 1;
     else if (answer === 'no') nao[q.noType] += 1;
-  });
+  }
   return { sim, nao };
-}
-
-function getActivatedLabels(answers: Record<number, 'yes' | 'no'>) {
-  const labels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
-  questions.forEach((q) => {
-    const answer = answers[q.id];
-    if (answer === 'yes') {
-      labels[q.yesType][q.yesLabel] = (labels[q.yesType][q.yesLabel] || 0) + 1;
-    } else if (answer === 'no') {
-      labels[q.noType][q.noLabel] = (labels[q.noType][q.noLabel] || 0) + 1;
-    }
-  });
-  return labels;
 }
 
 const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
@@ -59,7 +52,7 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
   const [modalOpen, setModalOpen] = useState(false);
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
-  const activatedLabels = getActivatedLabels(answers);
+  const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
   const maxScore = 18;
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({

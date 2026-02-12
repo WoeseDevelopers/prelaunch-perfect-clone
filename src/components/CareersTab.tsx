@@ -38,27 +38,10 @@ const CareersTab = ({ answers, sessionQuestions, onRestart }: CareersTabProps) =
   const { groupedCareers, allSubtypeCounts } = useMemo(() => {
     const allSubtypeCounts = computeSubtypeCounts(sessionQuestions, answers);
 
-    const subtypeRecency: Record<string, number> = {};
-    for (let i = 0; i < sessionQuestions.length; i++) {
-      const q = sessionQuestions[i];
-      const ans = answers[q.id];
-      if (!ans) continue;
-      const sub = ans === 'yes' ? q.yesSub : q.noSub;
-      if (sub) {
-        subtypeRecency[sub] = i;
-      }
-    }
-
-    const sortedSubtypes = Object.entries(allSubtypeCounts)
-      .sort((a, b) => {
-        if (b[1] !== a[1]) return b[1] - a[1];
-        return (subtypeRecency[b[0]] || 0) - (subtypeRecency[a[0]] || 0);
-      });
-    const playerTopSubtypes = new Set(sortedSubtypes.slice(0, 4).map(([name]) => name));
 
     const scored = careerDetails.map((career, idx) => {
       const careerSubLabels = career.relatedSubtypes.map((s) => s.label);
-      const matchCount = careerSubLabels.filter((label) => playerTopSubtypes.has(label)).length;
+      const matchCount = careerSubLabels.filter((label) => (allSubtypeCounts[label] || 0) > 0).length;
       const subtypeSum = careerSubLabels.reduce((sum, label) => sum + (allSubtypeCounts[label] || 0), 0);
       const level = getMatchLevel(matchCount);
       return { career, matchCount, subtypeSum, idx, level };

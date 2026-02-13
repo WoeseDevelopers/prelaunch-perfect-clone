@@ -1,56 +1,85 @@
 
 
-# Correcao: Filtro progressivo por tipo RIASEC nas abas de profissoes
+# Correcao: Selecao de carreiras por relevancia total dentro do tipo dominante
 
 ## Problema
 
-O algoritmo atual analisa todas as 600 carreiras igualmente e apenas "prioriza" o tipo dominante no desempate. Com 18 respostas espalhadas por ~12 subtipos, carreiras de qualquer tipo podem atingir 4/4 acidentalmente. Resultado: a aba "Excelente" mostra profissoes que nao tem relacao direta com o perfil do usuario.
+O filtro progressivo funciona corretamente (aba Excelente so mostra tipo A para perfil Artistico). Porem, as carreiras A que aparecem nao sao as mais "obvias" porque:
 
-## Solucao: Filtro progressivo por tipo
+1. A normalizacao atribui subtipos A aleatorios (via hash) a d1/d2
+2. Com 10 subtipos A possiveis e o usuario tendo pontos em apenas 3-5 deles, a maioria das carreiras A nao atinge 4/4
+3. As poucas que atingem 4/4 sao as que "tiveram sorte" no hash, nao necessariamente as mais representativas
 
-A selecao de carreiras vai ficando mais restritiva conforme o nivel de match aumenta:
+Exemplo: Designer Grafico pode receber MUDANCA e IDENTIDADE (pelo hash), enquanto o usuario tem pontos em CRIATIVIDADE e EXPRESSAO. Resultado: Designer Grafico fica em Bom ou Atencao, e uma carreira menos obvia aparece em Excelente.
 
-- **Excelente (4/4)**: somente carreiras do tipo dominante do usuario
-- **Bom (3/4)**: carreiras do tipo dominante primeiro; se sobrar vaga, completa com outros tipos
-- **Atencao (2/4)**: qualquer tipo, ordenado por relevancia
-- **Refazer (1/4)**: qualquer tipo restante
+## Solucao: Selecao por tipo primeiro, match depois
 
-Isso garante que na aba mais importante (Excelente), o usuario ve apenas profissoes diretamente ligadas ao seu perfil. A medida que desce nos niveis, a selecao vai "suavizando" e permitindo outros tipos.
+Mudar a logica das abas para que representem **nivel de afinidade com o tipo**, nao nivel de match bruto:
+
+- **Excelente**: as 4 melhores carreiras DO TIPO DOMINANTE (ordenadas por matchCount desc, subtypeSum desc)
+- **Bom**: as proximas 4 melhores do tipo dominante + backfill de outros tipos
+- **Atencao**: qualquer tipo, ordenado por relevancia
+- **Refazer**: restantes
+
+Cada card continua exibindo seu badge real (4/4, 3/4, etc.), preservando os criterios. A diferenca e que as abas agora organizam por RELEVANCIA AO PERFIL em vez de match count puro.
 
 ## Detalhes tecnicos
 
 ### Arquivo modificado
-- `src/components/CareersTab.tsx` - logica de selecao dos top 4 por nivel
+- `src/components/CareersTab.tsx`
 
-### Mudanca na logica de selecao (linhas 71-82)
+### Mudanca na logica do useMemo
 
-A logica atual aplica a mesma regra para todos os niveis (dominant first, backfill). Sera substituida por regras progressivas:
+Em vez de agrupar por `getMatchLevel(matchCount)` e depois filtrar por tipo, a nova logica:
+
+1. Calcula matchCount e subtypeSum para TODAS as 600 carreiras (sem mudanca)
+2. Separa em dois grupos: `dominantCareers` (type === dominantType) e `otherCareers`
+3. Ordena cada grupo por matchCount desc, subtypeSum desc, idx asc
+4. Distribui nas abas:
+   - Excelente: top 4 de dominantCareers
+   - Bom: proximas 4 de dominantCareers (posicoes 4-7). Se insuficientes, backfill com top de otherCareers
+   - Atencao: top 4 de otherCareers (ou restantes de dominantCareers se sobraram)
+   - Refazer: proximas 4 de otherCareers
+5. Cada item mantem seu matchCount/level original para exibir no badge do card
+
+### Codigo proposto
 
 ```text
-for (const level of subTabOrder) {
-  const all = grouped[level];
-  const dominant = all.filter(item => item.career.type === dominantType);
-  const others = all.filter(item => item.career.type !== dominantType);
+const dominantCareers = scored
+  .filter(item => item.career.type === dominantType)
+  .sort((a, b) => {
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+    return a.idx - b.idx;
+  });
 
-  if (level === 'Excelente') {
-    // Somente tipo dominante
-    grouped[level] = dominant.slice(0, 4);
-  } else if (level === 'Bom') {
-    // Dominante primeiro, completa com outros
-    const selected = [...dominant.slice(0, 4)];
-    const remaining = 4 - selected.length;
-    if (remaining > 0) selected.push(...others.slice(0, remaining));
-    grouped[level] = selected;
-  } else {
-    // Atencao e Refazer: qualquer tipo, ja ordenado por relevancia
-    grouped[level] = all.slice(0, 4);
-  }
-}
+const otherCareers = scored
+  .filter(item => item.career.type !== dominantType)
+  .sort((a, b) => {
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+    return a.idx - b.idx;
+  });
+
+// Excelente: top 4 dominant
+grouped['Excelente'] = dominantCareers.slice(0, 4);
+
+// Bom: next 4 dominant, backfill with others
+const bomDominant = dominantCareers.slice(4, 8);
+const bomBackfill = otherCareers.slice(0, 4 - bomDominant.length);
+grouped['Bom'] = [...bomDominant, ...bomBackfill].slice(0, 4);
+
+// Atencao: top others (or remaining dominant)
+const usedOthers = 4 - bomDominant.length;
+grouped['Atencao'] = otherCareers.slice(usedOthers, usedOthers + 4);
+
+// Refazer: next batch
+grouped['Refazer'] = otherCareers.slice(usedOthers + 4, usedOthers + 8);
 ```
 
 ### Impacto esperado
-- Aba Excelente: se o perfil e Artistico, mostra apenas Designer Grafico, Diretor de Arte, Ilustrador, etc.
-- Aba Bom: ainda prioriza Artistico, mas pode mostrar 1-2 de outros tipos se nao houver suficientes
-- Abas Atencao/Refazer: mostram profissoes variadas, refletindo que o match ja e fraco
-- Os criterios 4/4, 3/4, 2/4, 1/4 permanecem inalterados
-
+- Perfil Artistico: Excelente mostra Designer Grafico, Diretor de Arte, Ilustrador, Fotografo (os com maior match DENTRO do tipo A)
+- Os badges nos cards ainda mostram 4/4, 3/4 etc. conforme o match real
+- Bom mostra as proximas carreiras A mais relevantes
+- Atencao/Refazer mostram carreiras de outros tipos, refletindo menor afinidade
+- Os criterios 4/4, 3/4, 2/4, 1/4 sao preservados como indicadores visuais nos cards

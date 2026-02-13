@@ -38,13 +38,11 @@ const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
   const groupedCareers = useMemo(() => {
 
     const scored = careerDetails.map((career, idx) => {
-      // Match based on how many subtypes of the career's PRIMARY RIASEC type are active
-      const primaryType = career.type;
-      const profile = riasecProfiles[primaryType];
-      const activeSubtypesOfType = profile.subdivisions.filter(
-        (sub) => (perTypeSubtypeCounts[`${primaryType}_${sub}`] || 0) > 0
+      // Match = how many of THIS CAREER's 4 relatedSubtypes have count > 0
+      // Uses the SAME perTypeSubtypeCounts displayed in the Tipos tab
+      const matchCount = career.relatedSubtypes.filter(
+        (sub) => (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0) > 0
       ).length;
-      const matchCount = Math.min(activeSubtypesOfType, 4);
       const subtypeSum = career.relatedSubtypes.reduce(
         (sum, sub) => sum + (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0), 0
       );

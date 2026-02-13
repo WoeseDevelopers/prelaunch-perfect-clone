@@ -20,6 +20,28 @@ export function computeSubtypeCounts(
   return result;
 }
 
+/**
+ * GLOBAL source of truth: composite key `${type}_${label}` → count.
+ * Each answered question increments exactly 1 entry.
+ * Sum of all values === number of answered questions (18 at end).
+ */
+export function computeGlobalSubtypeCounts(
+  questions: Question[],
+  answers: Record<number, 'yes' | 'no'>,
+): Record<string, number> {
+  const result: Record<string, number> = {};
+  for (const q of questions) {
+    const ans = answers[q.id];
+    if (!ans) continue;
+    const sub = ans === 'yes' ? q.yesSub : q.noSub;
+    const type = ans === 'yes' ? q.yesType : q.noType;
+    if (!sub) continue;
+    const key = `${type}_${sub}`;
+    result[key] = (result[key] || 0) + 1;
+  }
+  return result;
+}
+
 export interface Question {
   id: number;
   text: string;

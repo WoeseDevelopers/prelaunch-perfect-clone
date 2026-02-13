@@ -50,6 +50,10 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
 
     // Sort within each level: subtypeSum desc → idx asc
     scored.sort((a, b) => {
+      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+      const aIsDom = a.career.type === dominantType ? 1 : 0;
+      const bIsDom = b.career.type === dominantType ? 1 : 0;
+      if (bIsDom !== aIsDom) return bIsDom - aIsDom;
       if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
       return a.idx - b.idx;
     });

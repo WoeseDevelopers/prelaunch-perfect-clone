@@ -1,70 +1,59 @@
 
-# Edição Inline na Area Administrativa
 
-## O que sera feito
+# Diagnostico e Correcao: Profissoes Desalinhadas com Tipo RIASEC
 
-Adicionar funcionalidade de edição direta em todas as 3 abas do painel admin (Perguntas, Profissoes e Tipos), permitindo alterar os dados sem sair da interface.
+## Problema Identificado
 
-**Importante:** Como o sistema nao usa banco de dados, as edicoes serao salvas em `localStorage`. Isso significa que as alteracoes persistem no navegador do administrador, mas nao alteram o codigo-fonte. Ao limpar o cache do navegador, os dados voltam ao original.
+O sistema possui **3 subtipos fantasma** que existem nos cards de profissoes mas **NAO existem** na base oficial de 60 subtipos usados pelas perguntas do quiz:
 
----
+- **"Resolucoes"** — aparece em 149 profissoes
+- **"Estabilidade"** — aparece em 139 profissoes
+- **"Coisas"** — aparece em 142 profissoes
 
-## Funcionalidades por aba
+**Total: ~430 slots de subtipos em profissoes que NUNCA podem ser matchados.**
 
-### 1. Perguntas
-- Botao "Editar" em cada card expandido
-- Campos editaveis:
-  - Texto da pergunta
-  - Subtipo SIM (dropdown com os 60 subtipos oficiais)
-  - Subtipo NAO (dropdown com os 60 subtipos oficiais)
-- Os tipos RIASEC (yesType/noType) sao derivados automaticamente do subtipo selecionado via `subtypeTypeMap`
-- Botoes Salvar / Cancelar
+Cada profissao possui exatamente 4 subtipos. Com ~430 slots inalcancaveis distribuidos entre 600 profissoes, uma grande parcela dos cards fica com apenas 2 ou 3 subtipos efetivos — tornando impossivel atingir match 4/4 para muitas profissoes, incluindo as do tipo Artistico.
 
-### 2. Profissoes
-- Botao "Editar" em cada card expandido
-- Campos editaveis:
-  - Nome da profissao
-  - Descricao
-  - Ponto forte (strengths)
-  - Ponto fraco (weaknesses)
-  - Tipo RIASEC principal (dropdown R/I/A/S/E/C)
-  - 4 subtipos (dropdowns: Dominante 1, Dominante 2, Secundario 1, Secundario 2)
-- Botoes Salvar / Cancelar
+Por exemplo, a profissao "Designer Grafico" (tipo A) possui os subtipos:
+- Ferramentas (R) — valido
+- Exposicao (E) — valido
+- Organizacao (C) — valido
+- **Resolucoes — FANTASMA (nunca pontuado)**
 
-### 3. Tipos
-- Botao "Editar" em cada tipo RIASEC
-- Campos editaveis:
-  - Nome do tipo (ex: "Realista")
-  - Descricao do tipo
-  - Cor (color picker ou input hex)
-  - Nomes dos 10 subtipos (inputs de texto)
-- Botoes Salvar / Cancelar
+Ela nunca podera atingir 4/4, e o match depende de subtipos de outros tipos (R, E, C), nao de subtipos Artisticos.
 
----
+## Solucao
 
-## Detalhes tecnicos
+Substituir cada ocorrencia dos 3 subtipos fantasma por subtipos validos da base oficial de 60, escolhendo o subtipo mais coerente com o contexto da profissao:
 
-### Persistencia via localStorage
-- Chave `trampos_admin_questions` para perguntas editadas
-- Chave `trampos_admin_careers` para profissoes editadas
-- Chave `trampos_admin_profiles` para tipos/subtipos editados
-- Na inicializacao, o admin carrega dados do localStorage; se nao houver, usa os dados originais do codigo
-- Botao "Resetar dados originais" por secao para reverter alteracoes
+| Fantasma | Substituicoes possiveis (exemplos) |
+|---|---|
+| Resolucoes | RACIOCINIO, PLANEJAMENTO, DECISAO, ANALISE |
+| Estabilidade | CONSTANCIA, ROTINA, PADRAO, ESTRUTURA |
+| Coisas | PRATICA, FERRAMENTAS, OPERACAO, PRODUCAO |
 
-### Arquitetura
-- Criar um hook `useAdminData` em `src/hooks/useAdminData.ts` que:
-  - Carrega dados do localStorage com fallback para os originais
-  - Expoe funcoes de update por item
-  - Expoe funcao de reset por secao
-- Refatorar `Admin.tsx` para usar esse hook em vez de importar diretamente `allQuestions`, `careerDetails` e `riasecProfiles`
-- Os componentes de edicao serao inline (dentro do card expandido), sem modais
+A escolha sera feita individualmente por profissao, respeitando:
+1. Nao duplicar subtipos dentro da mesma profissao (os 4 devem ser unicos)
+2. Selecionar o subtipo mais semanticamente proximo ao contexto da profissao
+3. Manter a diversidade de tipos RIASEC nos 4 slots
 
-### Validacoes
-- Subtipo editado deve existir na lista oficial de 60 subtipos
-- Profissao deve ter exatamente 4 subtipos sem duplicatas
-- Tipo RIASEC deve ser uma das 6 letras validas
-- Campos obrigatorios nao podem ficar vazios
+## Detalhes Tecnicos
 
-### Arquivos modificados
-1. **`src/hooks/useAdminData.ts`** (novo) - Hook de gerenciamento de estado com localStorage
-2. **`src/pages/Admin.tsx`** - Adicionar modo de edicao inline nos 3 componentes de aba (QuestionsAdmin, CareersAdmin, TypesAdmin)
+### Arquivo modificado
+- `src/data/careerDetails.ts` — substituicao dos ~430 subtipos fantasma nas 600 profissoes
+
+### Regras de substituicao por contexto
+- **Resolucoes** → Para profissoes analiticas: RACIOCINIO ou ANALISE. Para profissoes de gestao: DECISAO ou PLANEJAMENTO
+- **Estabilidade** → Para profissoes estruturadas: CONSTANCIA ou PADRAO. Para profissoes operacionais: ROTINA ou ESTRUTURA
+- **Coisas** → Para profissoes manuais: PRATICA ou FERRAMENTAS. Para profissoes de producao: OPERACAO ou PRODUCAO
+
+### Validacao pos-correcao
+- Confirmar que todos os 2400 slots de subtipos (600 profissoes x 4) pertencem ao conjunto oficial de 60
+- Confirmar que nenhuma profissao tem subtipos duplicados
+- Confirmar que o `subtypeTypeMap` cobre 100% dos subtipos usados
+
+### Impacto esperado
+- Profissoes do tipo Artistico (e todos os outros tipos) poderao atingir match 4/4
+- A distribuicao de profissoes nas abas Excelente/Bom/Atencao/Refazer ficara mais equilibrada e coerente com o perfil do usuario
+- O sistema voltara a ser matematicamente fechado sem subtipos inalcancaveis
+

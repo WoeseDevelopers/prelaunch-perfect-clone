@@ -50,6 +50,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
         if (currentIndex < sessionQuestions.length - 1) {
           setCurrentIndex(currentIndex + 1);
         } else {
+          try { const k = 'trampos_test_count'; localStorage.setItem(k, String((parseInt(localStorage.getItem(k) || '0', 10)) + 1)); } catch {}
           onComplete(newAnswers, sessionQuestions);
         }
       }, 350);

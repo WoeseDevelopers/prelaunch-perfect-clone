@@ -184,31 +184,37 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
                 </div>
 
                 {/* Description */}
-                <div className="px-4 pb-2">
-                  <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
-                    {career.description}
-                  </p>
-                </div>
+                {career.description && (
+                  <div className="px-4 pb-2">
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3">
+                      {career.description}
+                    </p>
+                  </div>
+                )}
 
                 {/* Strengths */}
-                <div className="mx-4 rounded-xl overflow-hidden border border-border/50 mb-1.5">
-                  <div className="px-3 py-1.5 border-l-4" style={{ borderLeftColor: 'hsl(142, 71%, 45%)' }}>
-                    <p className="text-[10px] font-bold text-foreground mb-0.5">Ponto forte</p>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
-                      {career.strengths}
-                    </p>
+                {career.strengths && (
+                  <div className="mx-4 rounded-xl overflow-hidden border border-border/50 mb-1.5">
+                    <div className="px-3 py-1.5 border-l-4" style={{ borderLeftColor: 'hsl(142, 71%, 45%)' }}>
+                      <p className="text-[10px] font-bold text-foreground mb-0.5">Ponto forte</p>
+                      <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
+                        {career.strengths}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Weaknesses */}
-                <div className="mx-4 rounded-xl overflow-hidden border border-border/50 mb-3">
-                  <div className="px-3 py-1.5 border-l-4" style={{ borderLeftColor: 'hsl(0, 84%, 60%)' }}>
-                    <p className="text-[10px] font-bold text-foreground mb-0.5">Ponto fraco</p>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
-                      {career.weaknesses}
-                    </p>
+                {career.weaknesses && (
+                  <div className="mx-4 rounded-xl overflow-hidden border border-border/50 mb-3">
+                    <div className="px-3 py-1.5 border-l-4" style={{ borderLeftColor: 'hsl(0, 84%, 60%)' }}>
+                      <p className="text-[10px] font-bold text-foreground mb-0.5">Ponto fraco</p>
+                      <p className="text-[10px] text-muted-foreground leading-relaxed line-clamp-2">
+                        {career.weaknesses}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Footer: 4 subtype icons */}
                 <div className="px-4 pb-4">

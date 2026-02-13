@@ -36,18 +36,11 @@ const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
   const [visibleCount, setVisibleCount] = useState(6);
 
   const groupedCareers = useMemo(() => {
-    // For each RIASEC type, count how many of its subdivisions have points > 0
-    const activeSubdivisionsPerType: Record<string, number> = {};
-    for (const [typeKey, profile] of Object.entries(riasecProfiles)) {
-      const count = profile.subdivisions.filter(
-        (sub) => (perTypeSubtypeCounts[`${typeKey}_${sub}`] || 0) > 0
-      ).length;
-      activeSubdivisionsPerType[typeKey] = count;
-    }
-
-    // Score ALL careers: matchCount = active subdivisions of the career's PRIMARY type (cap at 4)
+    // matchCount = how many of the career's OWN 4 relatedSubtypes have points > 0
     const scored = careerDetails.map((career, idx) => {
-      const matchCount = Math.min(activeSubdivisionsPerType[career.type] || 0, 4);
+      const matchCount = career.relatedSubtypes.filter(
+        (sub) => (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0) > 0
+      ).length;
       const subtypeSum = career.relatedSubtypes.reduce(
         (sum, sub) => sum + (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0), 0
       );

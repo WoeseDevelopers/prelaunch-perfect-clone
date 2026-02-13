@@ -15,31 +15,30 @@ export interface CareerDetail {
 }
 
 const subtypeTypeMap: Record<string, RiasecType> = {
-  // R
-  'REALISTA': 'R', 'COISAS': 'R', 'EXECUÇÃO': 'R', 'ROTINA': 'R',
-  'SEGURANÇA': 'R', 'MANUTENÇÃO': 'R', 'PRODUÇÃO': 'R', 'OPERAÇÃO': 'R',
-  'RESISTÊNCIA': 'R', 'CONSTÂNCIA': 'R', 'FERRAMENTAS': 'R', 'ESTABILIDADE': 'R',
-  'PRÁTICA': 'R',
-  // I
-  'ESTUDO': 'I', 'ANÁLISE': 'I', 'PESQUISA': 'I', 'DIAGNÓSTICO': 'I',
-  'CURIOSIDADE': 'I', 'RACIOCÍNIO': 'I', 'RESOLUÇÕES': 'I', 'TEORIA': 'I',
-  'OBSERVAÇÃO': 'I',
-  // A
-  'CRIATIVIDADE': 'A', 'EXPRESSÃO': 'A', 'MUDANÇA': 'A', 'IMAGINAÇÃO': 'A',
-  'INTUIÇÃO': 'A', 'ESTÉTICA': 'A', 'ESTILO': 'A', 'INOVAÇÃO': 'A',
-  'EXPERIÊNCIAS': 'A', 'IDENTIDADE': 'A',
-  // S
-  'GRUPO': 'S', 'COMUNICAÇÃO': 'S', 'EMPATIA': 'S', 'COLABORAÇÃO': 'S',
-  'AJUDA': 'S', 'ENSINO': 'S', 'CUIDADO': 'S', 'ESCUTA': 'S',
-  'APOIO': 'S', 'COOPERAÇÃO': 'S',
-  // E
-  'LIDERANÇA': 'E', 'RISCO': 'E', 'EXPOSIÇÃO': 'E', 'PERSUASÃO': 'E',
-  'INFLUÊNCIA': 'E', 'DECISÃO': 'E', 'AMBIÇÃO': 'E', 'COMPETIÇÃO': 'E',
-  'INICIATIVA': 'E', 'VISÃO': 'E',
-  // C
-  'ORGANIZAÇÃO': 'C', 'CONTROLE': 'C', 'PADRÃO': 'C', 'REGRAS': 'C',
-  'PRECISÃO': 'C', 'ESTRUTURA': 'C', 'PLANEJAMENTO': 'C', 'CONFORMIDADE': 'C',
-  'DADOS': 'C', 'DOCUMENTAÇÃO': 'C',
+  // R — 10 subtipos
+  'EXECUÇÃO': 'R', 'PRÁTICA': 'R', 'OPERAÇÃO': 'R', 'MANUTENÇÃO': 'R',
+  'FERRAMENTAS': 'R', 'SEGURANÇA': 'R', 'PRODUÇÃO': 'R', 'RESISTÊNCIA': 'R',
+  'CONSTÂNCIA': 'R', 'ROTINA': 'R',
+  // I — 10 subtipos
+  'ANÁLISE': 'I', 'PESQUISA': 'I', 'DIAGNÓSTICO': 'I', 'RACIOCÍNIO': 'I',
+  'CURIOSIDADE': 'I', 'OBSERVAÇÃO': 'I', 'TEORIA': 'I', 'ESTUDO': 'I',
+  'DADOS': 'I', 'PLANEJAMENTO': 'I',
+  // A — 10 subtipos
+  'CRIATIVIDADE': 'A', 'EXPRESSÃO': 'A', 'IMAGINAÇÃO': 'A', 'ESTÉTICA': 'A',
+  'ESTILO': 'A', 'INOVAÇÃO': 'A', 'IDENTIDADE': 'A', 'INTUIÇÃO': 'A',
+  'EXPERIÊNCIAS': 'A', 'MUDANÇA': 'A',
+  // S — 10 subtipos
+  'EMPATIA': 'S', 'COMUNICAÇÃO': 'S', 'AJUDA': 'S', 'ENSINO': 'S',
+  'ESCUTA': 'S', 'CUIDADO': 'S', 'APOIO': 'S', 'COLABORAÇÃO': 'S',
+  'COOPERAÇÃO': 'S', 'GRUPO': 'S',
+  // E — 10 subtipos
+  'LIDERANÇA': 'E', 'INFLUÊNCIA': 'E', 'PERSUASÃO': 'E', 'DECISÃO': 'E',
+  'INICIATIVA': 'E', 'VISÃO': 'E', 'AMBIÇÃO': 'E', 'COMPETIÇÃO': 'E',
+  'EXPOSIÇÃO': 'E', 'RISCO': 'E',
+  // C — 10 subtipos
+  'ORGANIZAÇÃO': 'C', 'PRECISÃO': 'C', 'REGRAS': 'C', 'CONTROLE': 'C',
+  'ESTRUTURA': 'C', 'DOCUMENTAÇÃO': 'C', 'CONFORMIDADE': 'C', 'PADRÃO': 'C',
+  'REGISTROS': 'C', 'CLASSIFICAÇÃO': 'C',
 };
 
 // [name, type, description, strengths, weaknesses, d1, d2, s1, s2]

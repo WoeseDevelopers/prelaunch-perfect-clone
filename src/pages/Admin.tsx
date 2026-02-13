@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IconLock, IconLogout, IconQuestionMark, IconBriefcase, IconCategory, IconChartBar, IconSearch, IconEdit, IconCheck, IconX, IconChevronDown, IconChevronUp, IconRefresh } from "@tabler/icons-react";
+import { IconLock, IconLogout, IconQuestionMark, IconBriefcase, IconCategory, IconChartBar, IconSearch, IconEdit, IconCheck, IconX, IconChevronDown, IconChevronUp, IconRefresh, IconFileSpreadsheet } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ import { allQuestions, riasecProfiles, type RiasecType, type Question, type Rias
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import { useAdminData, ALL_SUBTYPES, getTypeForSubtype } from "@/hooks/useAdminData";
 import { toast } from "@/hooks/use-toast";
+import ImportCareersModal from "@/components/ImportCareersModal";
 
 const ADMIN_PASSWORD = "trampos2024";
 const STATS_KEY = "trampos_test_count";
@@ -208,10 +209,11 @@ const QuestionsAdmin = ({ questions, updateQuestion, resetQuestions, profiles }:
 };
 
 // ─── Careers Tab ──────────────────────────────────────────
-const CareersAdmin = ({ careers, updateCareer, resetCareers, profiles }: {
+const CareersAdmin = ({ careers, updateCareer, resetCareers, replaceCareers, profiles }: {
   careers: CareerDetail[];
   updateCareer: (i: number, c: CareerDetail) => void;
   resetCareers: () => void;
+  replaceCareers: (newCareers: CareerDetail[]) => void;
   profiles: Record<RiasecType, RiasecProfile>;
 }) => {
   const [search, setSearch] = useState("");
@@ -219,6 +221,7 @@ const CareersAdmin = ({ careers, updateCareer, resetCareers, profiles }: {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editData, setEditData] = useState<{ name: string; description: string; strengths: string; weaknesses: string; type: RiasecType; subs: string[] }>({ name: '', description: '', strengths: '', weaknesses: '', type: 'R', subs: [] });
+  const [importOpen, setImportOpen] = useState(false);
 
   const types = [
     { label: "Todos", value: "all" },
@@ -259,6 +262,9 @@ const CareersAdmin = ({ careers, updateCareer, resetCareers, profiles }: {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" className="rounded-full text-xs" onClick={resetCareers}>
             <IconRefresh className="h-3.5 w-3.5 mr-1" /> Resetar
+          </Button>
+          <Button variant="outline" size="sm" className="rounded-full text-xs" onClick={() => setImportOpen(true)}>
+            <IconFileSpreadsheet className="h-3.5 w-3.5 mr-1" /> Importar Planilha
           </Button>
           <div className="relative">
             <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -388,6 +394,14 @@ const CareersAdmin = ({ careers, updateCareer, resetCareers, profiles }: {
           );
         })}
       </div>
+      <ImportCareersModal
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onConfirm={(newCareers) => {
+          replaceCareers(newCareers);
+          toast({ title: "Importado", description: `${newCareers.length} profissões importadas com sucesso.` });
+        }}
+      />
     </div>
   );
 };
@@ -610,7 +624,7 @@ const TypeBadge = ({ type, label, profiles }: { type: RiasecType; label: string;
 // ─── Main Admin Component ────────────────────────────────
 const Admin = () => {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem("admin_auth") === "1");
-  const { questions, careers, profiles, updateQuestion, updateCareer, updateProfile, resetQuestions, resetCareers, resetProfiles } = useAdminData();
+  const { questions, careers, profiles, updateQuestion, updateCareer, updateProfile, resetQuestions, resetCareers, resetProfiles, replaceCareers } = useAdminData();
 
   if (!authed) return <AdminLogin onLogin={() => setAuthed(true)} />;
 
@@ -650,7 +664,7 @@ const Admin = () => {
             <QuestionsAdmin questions={questions} updateQuestion={updateQuestion} resetQuestions={resetQuestions} profiles={profiles} />
           </TabsContent>
           <TabsContent value="profissoes">
-            <CareersAdmin careers={careers} updateCareer={updateCareer} resetCareers={resetCareers} profiles={profiles} />
+            <CareersAdmin careers={careers} updateCareer={updateCareer} resetCareers={resetCareers} replaceCareers={replaceCareers} profiles={profiles} />
           </TabsContent>
           <TabsContent value="tipos">
             <TypesAdmin questions={questions} careers={careers} profiles={profiles} updateProfile={updateProfile} resetProfiles={resetProfiles} />

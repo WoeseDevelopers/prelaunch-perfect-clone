@@ -70,6 +70,11 @@ export function useAdminData() {
     setCareers(careerDetails);
   }, []);
 
+  const replaceCareers = useCallback((newCareers: CareerDetail[]) => {
+    save(KEYS.careers, newCareers);
+    setCareers(newCareers);
+  }, []);
+
   const resetProfiles = useCallback(() => {
     localStorage.removeItem(KEYS.profiles);
     setProfiles(riasecProfiles);
@@ -78,6 +83,6 @@ export function useAdminData() {
   return {
     questions, careers, profiles,
     updateQuestion, updateCareer, updateProfile,
-    resetQuestions, resetCareers, resetProfiles,
+    resetQuestions, resetCareers, resetProfiles, replaceCareers,
   };
 }

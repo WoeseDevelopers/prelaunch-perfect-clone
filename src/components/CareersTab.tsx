@@ -68,17 +68,25 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       grouped[item.level].push(item);
     }
 
-    // Keep only top 4 per tab
+    // Progressive filtering: stricter for higher match levels
     for (const level of subTabOrder) {
       const all = grouped[level];
       const dominant = all.filter(item => item.career.type === dominantType);
       const others = all.filter(item => item.career.type !== dominantType);
-      const selected = [...dominant.slice(0, 4)];
-      const remaining = 4 - selected.length;
-      if (remaining > 0) {
-        selected.push(...others.slice(0, remaining));
+
+      if (level === 'Excelente') {
+        // Strict: only dominant type
+        grouped[level] = dominant.slice(0, 4);
+      } else if (level === 'Bom') {
+        // Dominant first, backfill with others
+        const selected = [...dominant.slice(0, 4)];
+        const remaining = 4 - selected.length;
+        if (remaining > 0) selected.push(...others.slice(0, remaining));
+        grouped[level] = selected;
+      } else {
+        // Atenção & Refazer: any type, already sorted by relevance
+        grouped[level] = all.slice(0, 4);
       }
-      grouped[level] = selected;
     }
 
     return grouped;

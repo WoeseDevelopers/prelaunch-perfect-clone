@@ -14,7 +14,7 @@ export interface CareerDetail {
   relatedSubtypes: SubtypeRef[];
 }
 
-const subtypeTypeMap: Record<string, RiasecType> = {
+export const subtypeTypeMap: Record<string, RiasecType> = {
   // R — 10 subtipos
   'EXECUÇÃO': 'R', 'PRÁTICA': 'R', 'OPERAÇÃO': 'R', 'MANUTENÇÃO': 'R',
   'FERRAMENTAS': 'R', 'SEGURANÇA': 'R', 'PRODUÇÃO': 'R', 'RESISTÊNCIA': 'R',

@@ -1,72 +1,59 @@
 
 
-# Correcao: Carreiras sem subtipos do proprio tipo RIASEC
+# Correcao: Priorizar profissoes do tipo dominante na aba Profissoes
 
-## Problema real
+## Problema
 
-A correcao anterior (subtipos fantasma) resolveu apenas 3 labels invalidos, mas o problema central permanece: **as carreiras nao possuem subtipos do seu proprio tipo RIASEC**.
+A normalizacao dos subtipos esta funcionando corretamente (d1/d2 pertencem ao tipo da carreira). Porem, o **algoritmo de ranking na CareersTab** nao considera o tipo RIASEC da carreira. Ele ordena puramente por:
+1. matchCount (quantos dos 4 subtipos tem pontos > 0)
+2. subtypeSum (soma total de pontos)
 
-Por exemplo, "Designer Grafico" (tipo A) tem subtipos:
-- Ferramentas → tipo R
-- Exposicao → tipo E
-- Organizacao → tipo C
-- Resolucoes → fantasma (corrigido para RACIOCINIO → tipo I)
-
-**Zero subtipos Artisticos** (CRIATIVIDADE, EXPRESSAO, IMAGINACAO, etc.)
-
-Quando o usuario pontua alto em Artistico, os pontos se acumulam em subtipos A (CRIATIVIDADE, EXPRESSAO, etc.). Mas as carreiras tipo A nao tem esses subtipos, entao nunca fazem match.
-
-Isso acontece em **todos os 6 tipos RIASEC** — os subtipos foram atribuidos aleatoriamente na geracao dos dados.
+Resultado: carreiras de **qualquer tipo** podem aparecer no topo, mesmo quando o usuario tem perfil dominante Artistico. Por exemplo, um Eletricista (R) com subtipos SEGURANCA, CONSTANCIA, IMAGINACAO, ENSINO pode ter match 4/4 porque o usuario acumulou pontos nesses subtipos ao responder perguntas de pares que envolvem R e S.
 
 ## Solucao
 
-Modificar a funcao `normalizeSubtypes` em `src/data/careerDetails.ts` para **garantir que os 2 primeiros subtipos (Dominante 1 e Dominante 2) pertencam ao tipo RIASEC da carreira**.
+Modificar o criterio de ordenacao em `CareersTab.tsx` para **priorizar carreiras do tipo dominante do usuario**. A nova ordem sera:
 
-### Regra
-Para cada carreira:
-1. **d1 (Dominante 1)**: se o subtipo original nao pertence ao tipo da carreira, substituir por um subtipo valido desse tipo
-2. **d2 (Dominante 2)**: mesma regra, garantindo que seja diferente de d1
-3. **s1 e s2 (Secundarios)**: mantem os subtipos originais (ja corrigidos de fantasmas), pois representam habilidades transversais
-4. Os 4 subtipos devem ser unicos (sem duplicatas)
+```text
+1. matchCount (desc) — quantos subtipos matcharam
+2. isDominantType (desc) — carreiras do tipo dominante primeiro  
+3. subtypeSum (desc) — soma dos pontos nos subtipos
+4. idx (asc) — desempate por ordem original
+```
 
-### Logica de escolha do subtipo substituto
-Selecionar o subtipo mais semanticamente proximo ao contexto da carreira usando um mapeamento de afinidade. Exemplo para tipo A:
-- Carreiras visuais (Designer, Ilustrador) → CRIATIVIDADE, ESTILO, ESTETICA
-- Carreiras performaticas (Ator, Musico) → EXPRESSAO, IDENTIDADE
-- Carreiras de escrita (Roteirista, Escritor) → IMAGINACAO, INTUICAO
-- Carreiras de inovacao (Game Designer, UX Designer) → INOVACAO, EXPERIENCIAS, MUDANCA
-
-Como a base tem 600 carreiras e o mapeamento individual seria inviavel, sera usada uma abordagem deterministica baseada no hash do nome da carreira para distribuir uniformemente os 10 subtipos do tipo entre as 100 carreiras de cada tipo.
+Isso garante que, dentro de cada nivel (4/4, 3/4, 2/4, 1/4), carreiras do tipo dominante aparecam antes de carreiras de outros tipos com a mesma quantidade de matches.
 
 ## Detalhes tecnicos
 
 ### Arquivo modificado
-- `src/data/careerDetails.ts` — expandir a funcao `normalizeSubtypes` para receber o tipo da carreira e forcar os slots d1/d2
+- `src/components/CareersTab.tsx` — alterar a funcao de sort dentro do `useMemo`
 
-### Pseudocodigo da nova normalizacao
+### Mudanca especifica
+
+Dentro do `useMemo` que calcula `groupedCareers`, a ordenacao atual:
 
 ```text
-function normalizeSubtypes(labels, careerType, careerName):
-  1. Uppercase all labels
-  2. Replace phantom subtypes (Resolucoes, Estabilidade, Coisas) — ja existente
-  3. Get the 10 subtypes belonging to careerType from subtypeTypeMap
-  4. For d1 (index 0):
-     - If subtypeTypeMap[label] !== careerType:
-       - Pick subtype from careerType's pool based on hash(careerName, 0)
-       - Ensure no duplicate with other slots
-  5. For d2 (index 1):
-     - Same logic with hash(careerName, 1)
-  6. Ensure all 4 are unique
-  7. Return normalized array
+scored.sort((a, b) => {
+  if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+  return a.idx - b.idx;
+});
+```
+
+Sera substituida por:
+
+```text
+scored.sort((a, b) => {
+  if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+  const aIsDom = a.career.type === dominantType ? 1 : 0;
+  const bIsDom = b.career.type === dominantType ? 1 : 0;
+  if (bIsDom !== aIsDom) return bIsDom - aIsDom;
+  if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+  return a.idx - b.idx;
+});
 ```
 
 ### Impacto esperado
-- Cada carreira tera pelo menos 2 subtipos do seu proprio tipo RIASEC
-- Quando o usuario pontua alto em Artistico, as carreiras tipo A terao subtipos como CRIATIVIDADE/EXPRESSAO que serao matchados
-- A aba "Excelente" (4/4) mostrara carreiras coerentes com o perfil dominante
-- Os 2 subtipos secundarios (s1/s2) mantem a diversidade de habilidades transversais
-
-### Validacao
-- O teste existente (`phantom-subtypes.test.ts`) continuara validando que todos os subtipos sao oficiais e sem duplicatas
-- Adicionar validacao extra: cada carreira deve ter pelo menos 2 subtipos do seu tipo RIASEC
-
+- Quando o resultado for Artistico, as 4 carreiras "Excelente" serao preferencialmente do tipo A (Designer Grafico, Diretor de Arte, etc.)
+- Carreiras de outros tipos ainda podem aparecer se nao houver suficientes do tipo dominante naquele nivel
+- A mesma logica beneficia todos os 6 tipos RIASEC
+- Nenhum outro arquivo precisa ser modificado

@@ -651,16 +651,37 @@ const raw: [string, RiasecType, string, string, string, string, string, string, 
   ['Tesoureiro (Especialista)','C','projeta atividades metodica de carreira em tesoureiro (especialista) integrando tarefas com foco em experiencia mantendo precisao e padrao','Amplia resultado mensurável ao equilibrando habilidades de convencional em contextos dinâmicos criativos','Pressiona incerteza técnica e riscos com resiliência sob picos constantes no trabalho','Exposição','Estilo','Cuidado','Teoria'],
 ];
 
-export const careerDetails: CareerDetail[] = raw.map(([name, type, description, strengths, weaknesses, d1, d2, s1, s2]) => ({
-  name,
-  type,
-  description,
-  strengths,
-  weaknesses,
-  relatedSubtypes: [
-    { label: d1.toUpperCase(), type: subtypeTypeMap[d1.toUpperCase()] || type },
-    { label: d2.toUpperCase(), type: subtypeTypeMap[d2.toUpperCase()] || type },
-    { label: s1.toUpperCase(), type: subtypeTypeMap[s1.toUpperCase()] || type },
-    { label: s2.toUpperCase(), type: subtypeTypeMap[s2.toUpperCase()] || type },
-  ],
-}));
+// Phantom subtype replacement map with fallbacks (ordered by priority)
+const phantomReplacements: Record<string, string[]> = {
+  'RESOLUÇÕES': ['RACIOCÍNIO', 'PLANEJAMENTO', 'ANÁLISE', 'DECISÃO'],
+  'ESTABILIDADE': ['CONSTÂNCIA', 'ROTINA', 'PADRÃO', 'ESTRUTURA'],
+  'COISAS': ['PRÁTICA', 'FERRAMENTAS', 'OPERAÇÃO', 'PRODUÇÃO'],
+};
+
+function normalizeSubtypes(labels: string[]): string[] {
+  const normalized = labels.map(l => l.toUpperCase());
+  for (let i = 0; i < normalized.length; i++) {
+    const replacements = phantomReplacements[normalized[i]];
+    if (replacements) {
+      const used = new Set(normalized.filter((_, j) => j !== i));
+      const pick = replacements.find(r => !used.has(r));
+      normalized[i] = pick || replacements[0]; // fallback to first if all used (unlikely)
+    }
+  }
+  return normalized;
+}
+
+export const careerDetails: CareerDetail[] = raw.map(([name, type, description, strengths, weaknesses, d1, d2, s1, s2]) => {
+  const subs = normalizeSubtypes([d1, d2, s1, s2]);
+  return {
+    name,
+    type,
+    description,
+    strengths,
+    weaknesses,
+    relatedSubtypes: subs.map(label => ({
+      label,
+      type: subtypeTypeMap[label] || type,
+    })),
+  };
+});

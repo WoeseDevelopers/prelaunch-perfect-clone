@@ -10,7 +10,7 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { allQuestions, riasecProfiles, type RiasecType, type Question, computeSubtypeCounts } from "@/data/quizQuestions";
+import { allQuestions, riasecProfiles, type RiasecType, type Question, computeSubtypeCounts, computeGlobalSubtypeCounts } from "@/data/quizQuestions";
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 import CareerModal from "@/components/CareerModal";
@@ -55,15 +55,16 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
   const [activeTab, setActiveTab] = useState<'tipos' | 'profissoes'>('profissoes');
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
-  // Single source of truth: per-type subtype counts used by BOTH tabs
+  // SINGLE SOURCE OF TRUTH: global subtype counts with composite keys
+  // Total of all values === number of answered questions (always 18 at end)
+  const perTypeSubtypeCounts = computeGlobalSubtypeCounts(sessionQuestions, answers);
+
+  // Derive per-type label counts for the Tipos tab display
   const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
-  const perTypeSubtypeCounts: Record<string, number> = {};
-  for (const type of Object.keys(scores) as RiasecType[]) {
-    const typeCounts = computeSubtypeCounts(sessionQuestions, answers, type);
-    Object.assign(activatedLabels[type], typeCounts);
-    for (const [sub, count] of Object.entries(typeCounts)) {
-      perTypeSubtypeCounts[`${type}_${sub}`] = count;
-    }
+  for (const [key, count] of Object.entries(perTypeSubtypeCounts)) {
+    const type = key.split('_')[0] as RiasecType;
+    const label = key.substring(type.length + 1);
+    activatedLabels[type][label] = count;
   }
   const maxScore = 18;
 

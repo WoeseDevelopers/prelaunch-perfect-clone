@@ -1,72 +1,56 @@
 
 
-# Correcao: Algoritmo de matching nao favorece carreiras do tipo dominante
+# Correcao: Filtro progressivo por tipo RIASEC nas abas de profissoes
 
-## Problema identificado
+## Problema
 
-Testei o quiz completo e confirmei: o resultado foi "Social", mas as 2 carreiras na aba "Excelente" sao **Cineasta** (tipo A) e **Tradutor Literario** (tipo A) — zero carreiras Sociais.
+O algoritmo atual analisa todas as 600 carreiras igualmente e apenas "prioriza" o tipo dominante no desempate. Com 18 respostas espalhadas por ~12 subtipos, carreiras de qualquer tipo podem atingir 4/4 acidentalmente. Resultado: a aba "Excelente" mostra profissoes que nao tem relacao direta com o perfil do usuario.
 
-Ha dois problemas tecnicos:
+## Solucao: Filtro progressivo por tipo
 
-### 1. Bug: `dominantType` ausente no dependency array do `useMemo`
-A variavel `dominantType` e usada dentro do `useMemo` para ordenar, mas NAO esta no array de dependencias `[perTypeSubtypeCounts]`. Isso pode causar resultados inconsistentes.
+A selecao de carreiras vai ficando mais restritiva conforme o nivel de match aumenta:
 
-### 2. Problema estrutural: o matching e "tipo-cego"
-O algoritmo verifica se cada um dos 4 subtipos do card tem pontos > 0. Com apenas 18 respostas distribuidas entre ~10-12 subtipos unicos (de 60 possiveis), carreiras de QUALQUER tipo tem chance similar de match. O `isDominantType` no sort so ajuda quando ha empate de matchCount — mas se nenhuma carreira do tipo dominante atinge 4/4, o sort nao resolve nada.
+- **Excelente (4/4)**: somente carreiras do tipo dominante do usuario
+- **Bom (3/4)**: carreiras do tipo dominante primeiro; se sobrar vaga, completa com outros tipos
+- **Atencao (2/4)**: qualquer tipo, ordenado por relevancia
+- **Refazer (1/4)**: qualquer tipo restante
 
-## Solucao
-
-Duas correcoes combinadas:
-
-### Correcao 1: Adicionar `dominantType` ao dependency array
-Garantir que o memo recalcula quando o tipo dominante muda.
-
-### Correcao 2: Reservar vagas para o tipo dominante no `slice(0, 4)`
-Em vez de simplesmente pegar as 4 primeiras carreiras de cada nivel, usar uma logica de "reserva de vagas":
-- Primeiro, selecionar ate 4 carreiras DO TIPO DOMINANTE naquele nivel
-- Se sobrar vagas (menos de 4 do tipo dominante), preencher com carreiras de outros tipos
-
-Isso garante que, na aba Excelente, se existir pelo menos 1 carreira Social com 4/4, ela aparecera antes de qualquer carreira de outro tipo.
+Isso garante que na aba mais importante (Excelente), o usuario ve apenas profissoes diretamente ligadas ao seu perfil. A medida que desce nos niveis, a selecao vai "suavizando" e permitindo outros tipos.
 
 ## Detalhes tecnicos
 
 ### Arquivo modificado
-- `src/components/CareersTab.tsx`
+- `src/components/CareersTab.tsx` - logica de selecao dos top 4 por nivel
 
-### Mudanca 1: dependency array (linha 77)
-```text
-}, [perTypeSubtypeCounts]);
-```
-Sera alterado para:
-```text
-}, [perTypeSubtypeCounts, dominantType]);
-```
+### Mudanca na logica de selecao (linhas 71-82)
 
-### Mudanca 2: logica de selecao dos top 4 (linhas 71-74)
-A logica atual:
-```text
-for (const level of subTabOrder) {
-  grouped[level] = grouped[level].slice(0, 4);
-}
-```
-Sera substituida por:
+A logica atual aplica a mesma regra para todos os niveis (dominant first, backfill). Sera substituida por regras progressivas:
+
 ```text
 for (const level of subTabOrder) {
   const all = grouped[level];
   const dominant = all.filter(item => item.career.type === dominantType);
   const others = all.filter(item => item.career.type !== dominantType);
-  const selected = [...dominant.slice(0, 4)];
-  const remaining = 4 - selected.length;
-  if (remaining > 0) {
-    selected.push(...others.slice(0, remaining));
+
+  if (level === 'Excelente') {
+    // Somente tipo dominante
+    grouped[level] = dominant.slice(0, 4);
+  } else if (level === 'Bom') {
+    // Dominante primeiro, completa com outros
+    const selected = [...dominant.slice(0, 4)];
+    const remaining = 4 - selected.length;
+    if (remaining > 0) selected.push(...others.slice(0, remaining));
+    grouped[level] = selected;
+  } else {
+    // Atencao e Refazer: qualquer tipo, ja ordenado por relevancia
+    grouped[level] = all.slice(0, 4);
   }
-  grouped[level] = selected;
 }
 ```
 
 ### Impacto esperado
-- Se o usuario tem tipo dominante Social, as 4 carreiras "Excelente" serao preferencialmente do tipo S (Assistente Social, Pedagogo, Terapeuta, etc.)
-- Carreiras de outros tipos so aparecem para preencher vagas restantes
-- A mesma logica se aplica a todas as abas (Bom, Atencao, Refazer)
-- O bug do dependency array sera corrigido, garantindo recalculo correto
+- Aba Excelente: se o perfil e Artistico, mostra apenas Designer Grafico, Diretor de Arte, Ilustrador, etc.
+- Aba Bom: ainda prioriza Artistico, mas pode mostrar 1-2 de outros tipos se nao houver suficientes
+- Abas Atencao/Refazer: mostram profissoes variadas, refletindo que o match ja e fraco
+- Os criterios 4/4, 3/4, 2/4, 1/4 permanecem inalterados
 

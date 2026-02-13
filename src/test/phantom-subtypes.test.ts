@@ -42,4 +42,17 @@ describe('Career subtypes validation', () => {
       }
     }
   });
+
+  it('each career has at least 2 subtypes of its own RIASEC type', () => {
+    const failures: string[] = [];
+    for (const career of careerDetails) {
+      const ownTypeCount = career.relatedSubtypes.filter(
+        (sub) => subtypeTypeMap[sub.label] === career.type
+      ).length;
+      if (ownTypeCount < 2) {
+        failures.push(`${career.name} (${career.type}): only ${ownTypeCount} own-type subtypes`);
+      }
+    }
+    expect(failures).toEqual([]);
+  });
 });

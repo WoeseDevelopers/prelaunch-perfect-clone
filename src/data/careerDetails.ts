@@ -658,21 +658,80 @@ const phantomReplacements: Record<string, string[]> = {
   'COISAS': ['PRÁTICA', 'FERRAMENTAS', 'OPERAÇÃO', 'PRODUÇÃO'],
 };
 
-function normalizeSubtypes(labels: string[]): string[] {
+// Build reverse map: RiasecType → list of its 10 subtypes
+const subtypesByType: Record<RiasecType, string[]> = { R: [], I: [], A: [], S: [], E: [], C: [] };
+for (const [label, rType] of Object.entries(subtypeTypeMap)) {
+  subtypesByType[rType].push(label);
+}
+
+// Simple deterministic hash from career name + slot index
+function simpleHash(name: string, slot: number): number {
+  let h = slot * 31;
+  for (let i = 0; i < name.length; i++) {
+    h = (h * 37 + name.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+function normalizeSubtypes(labels: string[], careerType: RiasecType, careerName: string): string[] {
   const normalized = labels.map(l => l.toUpperCase());
+
+  // Step 1: Replace phantom subtypes
   for (let i = 0; i < normalized.length; i++) {
     const replacements = phantomReplacements[normalized[i]];
     if (replacements) {
       const used = new Set(normalized.filter((_, j) => j !== i));
       const pick = replacements.find(r => !used.has(r));
-      normalized[i] = pick || replacements[0]; // fallback to first if all used (unlikely)
+      normalized[i] = pick || replacements[0];
     }
   }
+
+  // Step 2: Force d1 (index 0) and d2 (index 1) to belong to careerType
+  const pool = subtypesByType[careerType];
+  for (let slot = 0; slot < 2; slot++) {
+    if (subtypeTypeMap[normalized[slot]] !== careerType) {
+      const used = new Set(normalized);
+      const h = simpleHash(careerName, slot);
+      // Try each pool entry starting from hash position
+      let picked = false;
+      for (let attempt = 0; attempt < pool.length; attempt++) {
+        const candidate = pool[(h + attempt) % pool.length];
+        if (!used.has(candidate)) {
+          normalized[slot] = candidate;
+          picked = true;
+          break;
+        }
+      }
+      if (!picked) {
+        // Fallback: just use first available from pool
+        normalized[slot] = pool[h % pool.length];
+      }
+    }
+  }
+
+  // Step 3: Ensure all 4 are unique (fix s1/s2 if they collide with new d1/d2)
+  for (let slot = 2; slot < 4; slot++) {
+    const preceding = new Set(normalized.slice(0, slot));
+    if (preceding.has(normalized[slot])) {
+      // Pick any valid subtype not already used
+      const allUsed = new Set(normalized.filter((_, j) => j !== slot));
+      const allSubtypes = Object.keys(subtypeTypeMap);
+      const h = simpleHash(careerName, slot + 10);
+      for (let attempt = 0; attempt < allSubtypes.length; attempt++) {
+        const candidate = allSubtypes[(h + attempt) % allSubtypes.length];
+        if (!allUsed.has(candidate)) {
+          normalized[slot] = candidate;
+          break;
+        }
+      }
+    }
+  }
+
   return normalized;
 }
 
 export const careerDetails: CareerDetail[] = raw.map(([name, type, description, strengths, weaknesses, d1, d2, s1, s2]) => {
-  const subs = normalizeSubtypes([d1, d2, s1, s2]);
+  const subs = normalizeSubtypes([d1, d2, s1, s2], type, name);
   return {
     name,
     type,

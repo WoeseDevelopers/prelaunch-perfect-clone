@@ -34,13 +34,10 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<MatchLevel>('Excelente');
-  const [visibleCount, setVisibleCount] = useState(6);
 
   const groupedCareers = useMemo(() => {
-    // Only careers from the dominant type
-    const dominantCareers = careerDetails.filter((c) => c.type === dominantType);
-
-    const scored = dominantCareers.map((career, idx) => {
+    // Analyze ALL careers across all types
+    const scored = careerDetails.map((career, idx) => {
       const matchCount = career.relatedSubtypes.filter(
         (sub) => (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0) > 0
       ).length;
@@ -51,8 +48,8 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       return { career, matchCount, subtypeSum, idx, level };
     });
 
+    // Sort within each level: subtypeSum desc → idx asc
     scored.sort((a, b) => {
-      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
       if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
       return a.idx - b.idx;
     });
@@ -67,17 +64,19 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       grouped[item.level].push(item);
     }
 
+    // Keep only top 4 per tab
+    for (const level of subTabOrder) {
+      grouped[level] = grouped[level].slice(0, 4);
+    }
+
     return grouped;
-  }, [perTypeSubtypeCounts, dominantType]);
+  }, [perTypeSubtypeCounts]);
 
   const currentCareers = groupedCareers[activeSubTab];
-  const displayCareers = currentCareers.slice(0, visibleCount);
-  const hasMore = currentCareers.length > visibleCount;
 
   // Reset visible count when switching sub-tabs
   const handleSubTabChange = (level: MatchLevel) => {
     setActiveSubTab(level);
-    setVisibleCount(6);
   };
 
   return (
@@ -143,7 +142,7 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       )}
 
       {/* Career cards */}
-      {displayCareers.length === 0 && activeSubTab !== 'Refazer' && (
+      {currentCareers.length === 0 && activeSubTab !== 'Refazer' && (
         <Card className="rounded-2xl border border-border/50">
           <CardContent className="p-8 text-center">
             <p className="text-sm text-muted-foreground">
@@ -154,7 +153,7 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        {displayCareers.map(({ career, matchCount }) => {
+        {currentCareers.map(({ career, matchCount }) => {
           const level = getMatchLevel(matchCount);
           const levelStyle = matchLevelConfig[level];
 
@@ -254,18 +253,6 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
           );
         })}
       </div>
-
-      {/* Show more button */}
-      {hasMore && (
-        <div className="flex justify-center pt-2">
-          <button
-            onClick={() => setVisibleCount((prev) => prev + 6)}
-            className="rounded-full px-6 py-3 text-xs font-bold uppercase tracking-wide border-2 border-border hover:border-primary/50 text-muted-foreground hover:text-foreground transition-all duration-300"
-          >
-            Mostrar mais profissões
-          </button>
-        </div>
-      )}
 
       <CareerModal
         career={selectedCareer}

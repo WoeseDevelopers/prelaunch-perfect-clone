@@ -26,18 +26,21 @@ const subTabOrder: MatchLevel[] = ['Excelente', 'Bom', 'Atenção', 'Refazer'];
 
 interface CareersTabProps {
   perTypeSubtypeCounts: Record<string, number>;
+  dominantType: import('@/data/quizQuestions').RiasecType;
   onRestart?: () => void;
 }
 
-const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
+const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTabProps) => {
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [activeSubTab, setActiveSubTab] = useState<MatchLevel>('Excelente');
   const [visibleCount, setVisibleCount] = useState(6);
 
   const groupedCareers = useMemo(() => {
-    // matchCount = how many of the career's OWN 4 relatedSubtypes have points > 0
-    const scored = careerDetails.map((career, idx) => {
+    // Only careers from the dominant type
+    const dominantCareers = careerDetails.filter((c) => c.type === dominantType);
+
+    const scored = dominantCareers.map((career, idx) => {
       const matchCount = career.relatedSubtypes.filter(
         (sub) => (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0) > 0
       ).length;
@@ -48,38 +51,24 @@ const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
       return { career, matchCount, subtypeSum, idx, level };
     });
 
-    // Sort: matchCount desc → subtypeSum desc → idx asc (stable)
     scored.sort((a, b) => {
       if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
       if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
       return a.idx - b.idx;
     });
 
-    // Deduplicate
-    const seen = new Set<string>();
-    const unique = scored.filter((s) => {
-      const key = s.career.name + '_' + s.career.type;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-
-    // Select exactly top 18
-    const top18 = unique.slice(0, 18);
-
-    // Distribute into sub-tabs by matchCount
-    const grouped: Record<MatchLevel, typeof top18> = {
+    const grouped: Record<MatchLevel, typeof scored> = {
       Excelente: [],
       Bom: [],
       Atenção: [],
       Refazer: [],
     };
-    for (const item of top18) {
+    for (const item of scored) {
       grouped[item.level].push(item);
     }
 
     return grouped;
-  }, [perTypeSubtypeCounts]);
+  }, [perTypeSubtypeCounts, dominantType]);
 
   const currentCareers = groupedCareers[activeSubTab];
   const displayCareers = currentCareers.slice(0, visibleCount);

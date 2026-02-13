@@ -48,15 +48,22 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       return { career, matchCount, subtypeSum, idx, level };
     });
 
-    // Sort within each level: subtypeSum desc → idx asc
-    scored.sort((a, b) => {
-      if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-      const aIsDom = a.career.type === dominantType ? 1 : 0;
-      const bIsDom = b.career.type === dominantType ? 1 : 0;
-      if (bIsDom !== aIsDom) return bIsDom - aIsDom;
-      if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
-      return a.idx - b.idx;
-    });
+    // Separate dominant vs other careers, sort each by relevance
+    const dominantCareers = scored
+      .filter(item => item.career.type === dominantType)
+      .sort((a, b) => {
+        if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+        if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+        return a.idx - b.idx;
+      });
+
+    const otherCareers = scored
+      .filter(item => item.career.type !== dominantType)
+      .sort((a, b) => {
+        if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+        if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+        return a.idx - b.idx;
+      });
 
     const grouped: Record<MatchLevel, typeof scored> = {
       Excelente: [],
@@ -64,30 +71,21 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
       Atenção: [],
       Refazer: [],
     };
-    for (const item of scored) {
-      grouped[item.level].push(item);
-    }
 
-    // Progressive filtering: stricter for higher match levels
-    for (const level of subTabOrder) {
-      const all = grouped[level];
-      const dominant = all.filter(item => item.career.type === dominantType);
-      const others = all.filter(item => item.career.type !== dominantType);
+    // Excelente: top 4 dominant
+    grouped['Excelente'] = dominantCareers.slice(0, 4);
 
-      if (level === 'Excelente') {
-        // Strict: only dominant type
-        grouped[level] = dominant.slice(0, 4);
-      } else if (level === 'Bom') {
-        // Dominant first, backfill with others
-        const selected = [...dominant.slice(0, 4)];
-        const remaining = 4 - selected.length;
-        if (remaining > 0) selected.push(...others.slice(0, remaining));
-        grouped[level] = selected;
-      } else {
-        // Atenção & Refazer: any type, already sorted by relevance
-        grouped[level] = all.slice(0, 4);
-      }
-    }
+    // Bom: next 4 dominant, backfill with others
+    const bomDominant = dominantCareers.slice(4, 8);
+    const bomBackfill = otherCareers.slice(0, 4 - bomDominant.length);
+    grouped['Bom'] = [...bomDominant, ...bomBackfill].slice(0, 4);
+
+    // Atenção: top others (or remaining dominant)
+    const usedOthers = 4 - bomDominant.length;
+    grouped['Atenção'] = otherCareers.slice(usedOthers, usedOthers + 4);
+
+    // Refazer: next batch
+    grouped['Refazer'] = otherCareers.slice(usedOthers + 4, usedOthers + 8);
 
     return grouped;
   }, [perTypeSubtypeCounts, dominantType]);

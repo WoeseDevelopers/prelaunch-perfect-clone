@@ -416,7 +416,7 @@ export const riasecProfiles: Record<RiasecType, RiasecProfile> = {
     description: 'Você é prático, objetivo e gosta de trabalhar com as mãos. Prefere atividades concretas e tangíveis, resolver problemas reais e ver resultados imediatos do seu trabalho.',
     careers: ['Engenharia', 'Mecânica', 'Agricultura', 'Construção Civil', 'Eletricista'],
     color: 'hsl(142, 71%, 45%)',
-    subdivisions: ['REALISTA', 'COISAS', 'EXECUÇÃO', 'ROTINA', 'SEGURANÇA', 'MANUTENÇÃO', 'PRODUÇÃO', 'OPERAÇÃO', 'RESISTÊNCIA', 'CONSTÂNCIA', 'FERRAMENTAS', 'ESTABILIDADE'],
+    subdivisions: ['REALISTA', 'COISAS', 'EXECUÇÃO', 'ROTINA', 'SEGURANÇA', 'MANUTENÇÃO', 'PRODUÇÃO', 'OPERAÇÃO', 'RESISTÊNCIA', 'CONSTÂNCIA', 'FERRAMENTAS', 'ESTABILIDADE', 'PRÁTICA'],
   },
   I: {
     type: 'I',

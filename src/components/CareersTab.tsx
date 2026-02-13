@@ -36,10 +36,8 @@ const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
   const [visibleCount, setVisibleCount] = useState(6);
 
   const groupedCareers = useMemo(() => {
-
+    // Score ALL careers using the global subtypeCount
     const scored = careerDetails.map((career, idx) => {
-      // Match = how many of THIS CAREER's 4 relatedSubtypes have count > 0
-      // Uses the SAME perTypeSubtypeCounts displayed in the Tipos tab
       const matchCount = career.relatedSubtypes.filter(
         (sub) => (perTypeSubtypeCounts[`${sub.type}_${sub.label}`] || 0) > 0
       ).length;
@@ -50,12 +48,14 @@ const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
       return { career, matchCount, subtypeSum, idx, level };
     });
 
+    // Sort: matchCount desc → subtypeSum desc → idx asc (stable)
     scored.sort((a, b) => {
       if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
       if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
       return a.idx - b.idx;
     });
 
+    // Deduplicate
     const seen = new Set<string>();
     const unique = scored.filter((s) => {
       const key = s.career.name + '_' + s.career.type;
@@ -64,13 +64,17 @@ const CareersTab = ({ perTypeSubtypeCounts, onRestart }: CareersTabProps) => {
       return true;
     });
 
-    const grouped: Record<MatchLevel, typeof unique> = {
+    // Select exactly top 18
+    const top18 = unique.slice(0, 18);
+
+    // Distribute into sub-tabs by matchCount
+    const grouped: Record<MatchLevel, typeof top18> = {
       Excelente: [],
       Bom: [],
       Atenção: [],
       Refazer: [],
     };
-    for (const item of unique) {
+    for (const item of top18) {
       grouped[item.level].push(item);
     }
 

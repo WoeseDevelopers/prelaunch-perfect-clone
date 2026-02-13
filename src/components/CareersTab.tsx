@@ -70,11 +70,19 @@ const CareersTab = ({ perTypeSubtypeCounts, dominantType, onRestart }: CareersTa
 
     // Keep only top 4 per tab
     for (const level of subTabOrder) {
-      grouped[level] = grouped[level].slice(0, 4);
+      const all = grouped[level];
+      const dominant = all.filter(item => item.career.type === dominantType);
+      const others = all.filter(item => item.career.type !== dominantType);
+      const selected = [...dominant.slice(0, 4)];
+      const remaining = 4 - selected.length;
+      if (remaining > 0) {
+        selected.push(...others.slice(0, remaining));
+      }
+      grouped[level] = selected;
     }
 
     return grouped;
-  }, [perTypeSubtypeCounts]);
+  }, [perTypeSubtypeCounts, dominantType]);
 
   const currentCareers = groupedCareers[activeSubTab];
 

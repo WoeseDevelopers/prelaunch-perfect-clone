@@ -317,7 +317,7 @@ const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenPr
             </div>
           </>
         ) : (
-          <CareersTab perTypeSubtypeCounts={perTypeSubtypeCounts} onRestart={onRestart} />
+          <CareersTab perTypeSubtypeCounts={perTypeSubtypeCounts} dominantType={dominantType} onRestart={onRestart} />
         )}
 
         {/* Actions */}

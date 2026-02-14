@@ -12,7 +12,7 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
       <div className="w-full max-w-md space-y-8 text-center">
         <div className="animate-fade-in-up">
           <h1 className="text-5xl font-extrabold tracking-tight">
-            <span className="trampos-gradient">Trampos</span>
+            <span className="trampos-gradient">Trampo</span>
           </h1>
           <p className="mt-1 text-2xl font-semibold text-muted-foreground">Game</p>
         </div>
@@ -33,8 +33,8 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
 
             <Button
               onClick={onStart}
-              className="w-full rounded-full bg-[hsl(var(--trampos-purple))] text-lg font-semibold text-white transition-transform hover:scale-105 hover:bg-[hsl(var(--trampos-purple))]/90 h-12"
-            >
+              className="w-full rounded-full bg-[hsl(var(--trampos-purple))] text-lg font-semibold text-white transition-transform hover:scale-105 hover:bg-[hsl(var(--trampos-purple))]/90 h-12">
+
               Começar <IconRocket className="inline h-10 w-10 ml-1" />
             </Button>
 
@@ -48,8 +48,8 @@ const LandingScreen = ({ onStart }: LandingScreenProps) => {
           Baseado no modelo RIASEC de John Holland
         </p>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default LandingScreen;

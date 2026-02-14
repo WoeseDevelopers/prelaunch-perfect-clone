@@ -42,30 +42,36 @@ const CareerModal = ({ career, open, onOpenChange }: CareerModalProps) => {
               <DialogTitle className="text-2xl font-extrabold text-foreground leading-tight" style={{ fontFamily: "'Syne', sans-serif" }}>
                 {career.name}
               </DialogTitle>
-              <p className="text-sm text-muted-foreground leading-relaxed mt-3">
-                {career.description}
-              </p>
+              {career.description && (
+                <p className="text-sm text-muted-foreground leading-relaxed mt-3">
+                  {career.description}
+                </p>
+              )}
             </div>
 
             {/* Strengths */}
-            <div className="mx-6 rounded-xl overflow-hidden border border-border/50 mb-3">
-              <div className="px-4 py-2 border-l-4" style={{ borderLeftColor: 'hsl(142, 71%, 45%)' }}>
-                <p className="text-xs font-bold text-foreground mb-1">Ponto forte</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {career.strengths}
-                </p>
+            {career.strengths && (
+              <div className="mx-6 rounded-xl overflow-hidden border border-border/50 mb-3">
+                <div className="px-4 py-2 border-l-4" style={{ borderLeftColor: 'hsl(142, 71%, 45%)' }}>
+                  <p className="text-xs font-bold text-foreground mb-1">Ponto forte</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {career.strengths}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Weaknesses */}
-            <div className="mx-6 rounded-xl overflow-hidden border border-border/50 mb-5">
-              <div className="px-4 py-2 border-l-4" style={{ borderLeftColor: 'hsl(0, 84%, 60%)' }}>
-                <p className="text-xs font-bold text-foreground mb-1">Ponto fraco</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {career.weaknesses}
-                </p>
+            {career.weaknesses && (
+              <div className="mx-6 rounded-xl overflow-hidden border border-border/50 mb-5">
+                <div className="px-4 py-2 border-l-4" style={{ borderLeftColor: 'hsl(0, 84%, 60%)' }}>
+                  <p className="text-xs font-bold text-foreground mb-1">Ponto fraco</p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {career.weaknesses}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Icons row - always horizontal at bottom */}
             <div className="px-6 pb-6">

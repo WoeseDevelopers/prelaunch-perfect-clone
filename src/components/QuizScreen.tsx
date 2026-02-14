@@ -1,39 +1,42 @@
 import { useState, useMemo } from "react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Progress } from "@/components/ui/progress";
-import { type RiasecType, questions, riasecProfiles } from "@/data/quizQuestions";
+import { type RiasecType, type Question, getRandomQuestions, riasecProfiles, computeSubtypeCounts } from "@/data/quizQuestions";
 import RiasecIcon from "@/components/RiasecIcon";
+import SubtypeModal from "@/components/SubtypeModal";
 import { cn } from "@/lib/utils";
 
 interface QuizScreenProps {
-  onComplete: (answers: Record<number, 'yes' | 'no'>) => void;
+  onComplete: (answers: Record<number, 'yes' | 'no'>, questions: Question[]) => void;
   onBack: () => void;
 }
 
 const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
+  const [sessionQuestions] = useState(() => getRandomQuestions());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, 'yes' | 'no'>>({});
   const [revealed, setRevealed] = useState(false);
 
-  const question = questions[currentIndex];
-  const progress = ((currentIndex + 1) / questions.length) * 100;
+  const question = sessionQuestions[currentIndex];
+  const progress = ((currentIndex + 1) / sessionQuestions.length) * 100;
   const selectedValue = answers[question.id];
 
   const yesProfile = riasecProfiles[question.yesType];
   const noProfile = riasecProfiles[question.noType];
 
-  // Compute RIASEC scores from answers so far
+  // Direct type scoring
   const scores = useMemo(() => {
     const s: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-    for (const q of questions) {
+    for (const q of sessionQuestions) {
       const ans = answers[q.id];
-      if (ans === 'yes') s[q.yesType]++;
-      else if (ans === 'no') s[q.noType]++;
+      if (ans === 'yes') s[q.yesType] += 1;
+      else if (ans === 'no') s[q.noType] += 1;
     }
     return s;
-  }, [answers]);
+  }, [answers, sessionQuestions]);
 
   const totalAnswered = Object.keys(answers).length;
+  const [selectedType, setSelectedType] = useState<RiasecType | null>(null);
 
   const handleAnswer = (value: 'yes' | 'no') => {
     if (revealed) return;
@@ -43,11 +46,14 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
 
     setTimeout(() => {
       setRevealed(false);
-      if (currentIndex < questions.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        onComplete(newAnswers);
-      }
+      setTimeout(() => {
+        if (currentIndex < sessionQuestions.length - 1) {
+          setCurrentIndex(currentIndex + 1);
+        } else {
+          try { const k = 'trampos_test_count'; localStorage.setItem(k, String((parseInt(localStorage.getItem(k) || '0', 10)) + 1)); } catch {}
+          onComplete(newAnswers, sessionQuestions);
+        }
+      }, 350);
     }, 1800);
   };
 
@@ -72,7 +78,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
             Voltar
           </button>
           <span className="text-sm font-medium text-muted-foreground">
-            {currentIndex + 1} / {questions.length}
+            {currentIndex + 1} / {sessionQuestions.length}
           </span>
         </div>
 
@@ -158,37 +164,39 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                 display: 'grid',
                 gridTemplateRows: revealed ? '1fr' : '0fr',
                 opacity: revealed ? 1 : 0,
-                transition: 'grid-template-rows 500ms cubic-bezier(0.33, 1, 0.68, 1), opacity 400ms ease',
+                transition: revealed
+                  ? 'grid-template-rows 500ms cubic-bezier(0.33, 1, 0.68, 1), opacity 400ms ease'
+                  : 'grid-template-rows 400ms cubic-bezier(0.4, 0, 0.2, 1), opacity 300ms cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             >
               <div style={{ overflow: 'hidden' }}>
               <div className="flex gap-[2px]">
-                <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card border-r border-border/50">
+                <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card border-r border-border/50">
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: yesProfile.color }}
                   >
-                    <RiasecIcon name={yesProfile.icon} className="text-white" size={26} />
+                    <RiasecIcon name={yesProfile.icon} className="text-white" size={31} />
                   </div>
                   <span
                     className="text-xs font-extrabold uppercase tracking-wide"
                     style={{ color: yesProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
-                    {yesProfile.name}
+                    {question.yesSub || yesProfile.name}
                   </span>
                 </div>
-                <div className="flex-1 flex flex-col items-center gap-2 py-5 bg-card">
+                <div className="flex-1 flex flex-col items-center gap-3 py-5 bg-card">
                   <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
                     style={{ backgroundColor: noProfile.color }}
                   >
-                    <RiasecIcon name={noProfile.icon} className="text-white" size={26} />
+                    <RiasecIcon name={noProfile.icon} className="text-white" size={31} />
                   </div>
                   <span
                     className="text-xs font-extrabold uppercase tracking-wide"
                     style={{ color: noProfile.color, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                   >
-                    {noProfile.name}
+                    {question.noSub || noProfile.name}
                   </span>
                 </div>
               </div>
@@ -214,7 +222,11 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                   const profile = riasecProfiles[type];
                   const count = scores[type];
                   return (
-                    <div key={type} className="flex flex-col items-center gap-1.5">
+                    <button
+                      key={type}
+                      className="flex flex-col items-center gap-1.5 cursor-pointer"
+                      onClick={() => setSelectedType(type)}
+                    >
                       <div
                         className="relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
                         style={{
@@ -247,7 +259,7 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
                       >
                         {profile.name.slice(0, 3)}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -255,6 +267,13 @@ const QuizScreen = ({ onComplete, onBack }: QuizScreenProps) => {
           </div>
         </div>
       )}
+
+      <SubtypeModal
+        riasecType={selectedType}
+        open={!!selectedType}
+        onOpenChange={(open) => !open && setSelectedType(null)}
+        subtypeScores={selectedType ? computeSubtypeCounts(sessionQuestions, answers, selectedType) : {}}
+      />
     </div>
   );
 };

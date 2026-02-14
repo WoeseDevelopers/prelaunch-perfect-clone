@@ -10,56 +10,62 @@ import {
   PolarRadiusAxis,
   ResponsiveContainer,
 } from "recharts";
-import { questions, riasecProfiles, type RiasecType } from "@/data/quizQuestions";
+import { allQuestions, riasecProfiles, type RiasecType, type Question, computeSubtypeCounts, computeGlobalSubtypeCounts } from "@/data/quizQuestions";
 import { careerDetails, type CareerDetail } from "@/data/careerDetails";
 import RiasecIcon from "@/components/RiasecIcon";
 import CareerModal from "@/components/CareerModal";
+import CareersTab from "@/components/CareersTab";
 
 interface ResultsScreenProps {
   answers: Record<number, 'yes' | 'no'>;
+  sessionQuestions: Question[];
   onRestart: () => void;
 }
 
 function calculateScores(answers: Record<number, 'yes' | 'no'>) {
   const scores: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-  questions.forEach((q) => {
-    const answer = answers[q.id];
+  const answeredIds = Object.keys(answers).map(Number);
+  for (const id of answeredIds) {
+    const q = allQuestions.find((q) => q.id === id);
+    if (!q) continue;
+    const answer = answers[id];
     if (answer === 'yes') scores[q.yesType] += 1;
     else if (answer === 'no') scores[q.noType] += 1;
-  });
+  }
   return scores;
 }
 
 function calculateSimNao(answers: Record<number, 'yes' | 'no'>) {
   const sim: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   const nao: Record<RiasecType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
-  questions.forEach((q) => {
-    const answer = answers[q.id];
+  const answeredIds = Object.keys(answers).map(Number);
+  for (const id of answeredIds) {
+    const q = allQuestions.find((q) => q.id === id);
+    if (!q) continue;
+    const answer = answers[id];
     if (answer === 'yes') sim[q.yesType] += 1;
     else if (answer === 'no') nao[q.noType] += 1;
-  });
+  }
   return { sim, nao };
 }
 
-function getActivatedLabels(answers: Record<number, 'yes' | 'no'>) {
-  const labels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
-  questions.forEach((q) => {
-    const answer = answers[q.id];
-    if (answer === 'yes') {
-      labels[q.yesType][q.yesLabel] = (labels[q.yesType][q.yesLabel] || 0) + 1;
-    } else if (answer === 'no') {
-      labels[q.noType][q.noLabel] = (labels[q.noType][q.noLabel] || 0) + 1;
-    }
-  });
-  return labels;
-}
-
-const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
+const ResultsScreen = ({ answers, sessionQuestions, onRestart }: ResultsScreenProps) => {
   const [selectedCareer, setSelectedCareer] = useState<CareerDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'tipos' | 'profissoes'>('profissoes');
   const scores = calculateScores(answers);
   const { sim, nao } = calculateSimNao(answers);
-  const activatedLabels = getActivatedLabels(answers);
+  // SINGLE SOURCE OF TRUTH: global subtype counts with composite keys
+  // Total of all values === number of answered questions (always 18 at end)
+  const perTypeSubtypeCounts = computeGlobalSubtypeCounts(sessionQuestions, answers);
+
+  // Derive per-type label counts for the Tipos tab display
+  const activatedLabels: Record<RiasecType, Record<string, number>> = { R: {}, I: {}, A: {}, S: {}, E: {}, C: {} };
+  for (const [key, count] of Object.entries(perTypeSubtypeCounts)) {
+    const type = key.split('_')[0] as RiasecType;
+    const label = key.substring(type.length + 1);
+    activatedLabels[type][label] = count;
+  }
   const maxScore = 18;
 
   const chartData = (Object.keys(riasecProfiles) as RiasecType[]).map((type) => ({
@@ -132,157 +138,187 @@ const ResultsScreen = ({ answers, onRestart }: ResultsScreenProps) => {
           </CardContent>
         </Card>
 
-        {/* Unified type cards - side by side layout */}
-        <div className="animate-fade-in-up-delay space-y-[30px]">
-        {sorted.map(([type, score]) => {
-            const profile = riasecProfiles[type];
-            const pct = (score / maxScore) * 100;
-            const isDominant = type === dominantType;
-            const active = activatedLabels[type];
-            return (
-              <Card
-                key={type}
-                className={`rounded-2xl shadow-sm overflow-hidden ${
-                  isDominant
-                    ? "border-2 border-[hsl(var(--trampos-purple))]"
-                    : "border border-border/50"
-                }`}
-              >
-                <CardContent className="p-0">
-                  {/* Header row: icon + name + badge + SIM/NÃO/Score */}
-                  <div className={`flex items-center gap-3 px-5 py-4 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: profile.color }}
-                    >
-                      <RiasecIcon name={profile.icon} size={22} className="text-white" />
-                    </div>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className={`font-bold text-base ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
-                        {profile.name}
-                      </span>
-                      {isDominant && (
-                        <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[9px] font-bold text-white tracking-wide">
-                          TOP
-                        </span>
-                      )}
-                    </div>
-                    <div className="ml-auto flex items-center gap-2 shrink-0">
-                      <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
-                        <IconCheck className="h-4 w-4 text-emerald-600" />{String(sim[type]).padStart(2, '0')}
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
-                        <IconX className="h-4 w-4 text-red-500" />{String(nao[type]).padStart(2, '0')}
-                      </span>
-                      <span className="inline-flex items-center rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
-                        {String(score).padStart(2, '0')}
-                        <span className="font-medium text-muted-foreground ml-0.5">/{maxScore}</span>
-                      </span>
-                    </div>
-                  </div>
+        {/* Tab switcher */}
+        <div className="flex rounded-full border border-border/50 p-1 bg-secondary/30 animate-fade-in-up-delay">
+          <button
+            onClick={() => setActiveTab('profissoes')}
+            className={`flex-1 rounded-full py-2.5 text-sm font-bold transition-all ${
+              activeTab === 'profissoes'
+                ? 'bg-[hsl(var(--trampos-purple))] text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Profissões
+          </button>
+          <button
+            onClick={() => setActiveTab('tipos')}
+            className={`flex-1 rounded-full py-2.5 text-sm font-bold transition-all ${
+              activeTab === 'tipos'
+                ? 'bg-[hsl(var(--trampos-purple))] text-white shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Tipos
+          </button>
+        </div>
 
-                  {/* Progress bar */}
-                  <div className="px-5">
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-                      <div
-                        className="h-full rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%`, backgroundColor: profile.color }}
-                      />
-                    </div>
-                  </div>
+        {/* Tab content */}
+        {activeTab === 'tipos' ? (
+          <>
+            {/* Unified type cards */}
+            <div className="animate-fade-in-up-delay space-y-[30px]">
+            {sorted.map(([type, score]) => {
+                const profile = riasecProfiles[type];
+                const pct = (score / maxScore) * 100;
+                const isDominant = type === dominantType;
+                const active = activatedLabels[type];
+                return (
+                  <Card
+                    key={type}
+                    className={`rounded-2xl shadow-sm overflow-hidden ${
+                      isDominant
+                        ? "border-2 border-[hsl(var(--trampos-purple))]"
+                        : "border border-border/50"
+                    }`}
+                  >
+                    <CardContent className="p-0">
+                      {/* Header row */}
+                      <div className={`flex items-center gap-3 px-5 py-4 ${isDominant ? "bg-[hsl(var(--trampos-purple))]/5" : ""}`}>
+                        <div
+                          className="w-11 h-11 rounded-full flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: profile.color }}
+                        >
+                          <RiasecIcon name={profile.icon} size={22} className="text-white" />
+                        </div>
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`font-bold text-base ${isDominant ? "text-[hsl(var(--trampos-purple))]" : "text-foreground"}`}>
+                            {profile.name}
+                          </span>
+                          {isDominant && (
+                            <span className="rounded-full bg-[hsl(var(--trampos-purple))] px-2 py-0.5 text-[9px] font-bold text-white tracking-wide">
+                              TOP
+                            </span>
+                          )}
+                        </div>
+                        <div className="ml-auto flex items-center gap-2 shrink-0">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
+                            <IconCheck className="h-4 w-4 text-emerald-600" />{String(sim[type]).padStart(2, '0')}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
+                            <IconX className="h-4 w-4 text-red-500" />{String(nao[type]).padStart(2, '0')}
+                          </span>
+                          <span className="inline-flex items-center rounded-full border-2 border-border px-3 py-1 text-sm font-extrabold text-foreground">
+                            {String(score).padStart(2, '0')}
+                            <span className="font-medium text-muted-foreground ml-0.5">/{maxScore}</span>
+                          </span>
+                        </div>
+                      </div>
 
-                  {/* Body: description + subdivisions + careers */}
-                  <div className="px-5 py-4 space-y-4">
-                    {/* Description */}
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {profile.description}
-                    </p>
+                      {/* Progress bar */}
+                      <div className="px-5">
+                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+                          <div
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ width: `${pct}%`, backgroundColor: profile.color }}
+                          />
+                        </div>
+                      </div>
 
-                    {/* Subdivisions */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {profile.subdivisions.map((sub) => {
-                        const count = active[sub] || 0;
-                        const isActive = count > 0;
-                        return (
-                          <span
-                            key={sub}
-                            className="inline-flex items-center gap-1 rounded-full text-[9px] font-bold uppercase tracking-wide"
-                            style={{
-                              backgroundColor: isActive ? profile.color : 'transparent',
-                              color: isActive ? '#fff' : profile.color,
-                              border: `1.5px solid ${profile.color}`,
-                              opacity: isActive ? 1 : 0.3,
-                              paddingLeft: '10px',
-                              paddingRight: isActive ? '3px' : '10px',
-                              paddingTop: '3px',
-                              paddingBottom: '3px',
-                            }}
-                          >
-                            {sub}
-                            {isActive && (
+                      {/* Body */}
+                      <div className="px-5 py-4 space-y-4">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          {profile.description}
+                        </p>
+
+                        {/* Subdivisions */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {profile.subdivisions.map((sub) => {
+                            const count = active[sub] || 0;
+                            const isActive = count > 0;
+                            return (
                               <span
-                                className="inline-flex items-center justify-center rounded-full text-[9px] font-bold"
+                                key={sub}
+                                className="inline-flex items-center gap-1 rounded-full text-[9px] font-bold uppercase tracking-wide"
                                 style={{
-                                  width: '20px',
-                                  height: '20px',
-                                  backgroundColor: '#fff',
-                                  color: profile.color,
+                                  backgroundColor: isActive ? profile.color : 'transparent',
+                                  color: isActive ? '#fff' : profile.color,
+                                  border: `1.5px solid ${profile.color}`,
+                                  opacity: isActive ? 1 : 0.3,
+                                  paddingLeft: '10px',
+                                  paddingRight: isActive ? '3px' : '10px',
+                                  paddingTop: '3px',
+                                  paddingBottom: '3px',
                                 }}
                               >
-                                {String(count).padStart(2, '0')}
+                                {sub}
+                                {isActive && (
+                                  <span
+                                    className="inline-flex items-center justify-center rounded-full text-[9px] font-bold"
+                                    style={{
+                                      width: '20px',
+                                      height: '20px',
+                                      backgroundColor: '#fff',
+                                      color: profile.color,
+                                    }}
+                                  >
+                                    {String(count).padStart(2, '0')}
+                                  </span>
+                                )}
                               </span>
-                            )}
-                          </span>
-                        );
-                      })}
-                    </div>
+                            );
+                          })}
+                        </div>
 
-                    {/* Careers */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {profile.careers.map((c) => {
-                        const detail = careerDetails.find(
-                          (cd) => cd.name === c && cd.type === type
-                        );
-                        return (
-                          <button
-                            key={c}
-                            onClick={() => {
-                              if (detail) {
-                                setSelectedCareer(detail);
-                                setModalOpen(true);
-                              }
-                            }}
-                            className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-[11px] font-medium text-foreground/80 hover:bg-secondary transition-colors cursor-pointer"
-                          >
-                            {c}
-                          </button>
-                        );
-                      })}
-                    </div>
+                        {/* Careers */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {profile.careers.map((c) => {
+                            const detail = careerDetails.find(
+                              (cd) => cd.name === c && cd.type === type
+                            );
+                            return (
+                              <button
+                                key={c}
+                                onClick={() => {
+                                  if (detail) {
+                                    setSelectedCareer(detail);
+                                    setModalOpen(true);
+                                  }
+                                }}
+                                className="rounded-full border border-border bg-secondary/50 px-3 py-1 text-[11px] font-medium text-foreground/80 hover:bg-secondary transition-colors cursor-pointer"
+                              >
+                                {c}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+
+              {/* Totals row */}
+              <Card className="rounded-2xl border border-border/50 shadow-sm">
+                <CardContent className="px-4 py-3 flex items-center gap-3">
+                  <span className="font-bold text-foreground">Total</span>
+                  <div className="ml-auto flex items-center gap-5">
+                    <span className="font-bold text-emerald-600">
+                      {Object.values(sim).reduce((a, b) => a + b, 0)}
+                    </span>
+                    <span className="font-bold text-red-500">
+                      {Object.values(nao).reduce((a, b) => a + b, 0)}
+                    </span>
+                    <span className="font-extrabold text-lg text-foreground">
+                      {Object.values(scores).reduce((a, b) => a + b, 0)}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
-            );
-          })}
-
-          {/* Totals row */}
-          <Card className="rounded-2xl border border-border/50 shadow-sm">
-            <CardContent className="px-4 py-3 flex items-center gap-3">
-              <span className="font-bold text-foreground">Total</span>
-              <div className="ml-auto flex items-center gap-5">
-                <span className="font-bold text-emerald-600">
-                  {Object.values(sim).reduce((a, b) => a + b, 0)}
-                </span>
-                <span className="font-bold text-red-500">
-                  {Object.values(nao).reduce((a, b) => a + b, 0)}
-                </span>
-                <span className="font-extrabold text-lg text-foreground">
-                  {Object.values(scores).reduce((a, b) => a + b, 0)}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </>
+        ) : (
+          <CareersTab perTypeSubtypeCounts={perTypeSubtypeCounts} dominantType={dominantType} onRestart={onRestart} />
+        )}
 
         {/* Actions */}
         <div className="flex gap-3 animate-fade-in-up-delay-2 pb-8">

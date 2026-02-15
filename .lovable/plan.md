@@ -1,76 +1,85 @@
 
-# Importar Planilha de Profissoes na aba Admin
 
-## Resumo
+# Correcao: Selecao de carreiras por relevancia total dentro do tipo dominante
 
-Adicionar um botao "Importar Planilha" ao lado do botao "Resetar" na aba Profissoes do Admin. O botao abre um modal que aceita arquivos .xlsx, .xls e .csv, valida colunas e linhas, mostra preview e substitui 100% da base de profissoes ao confirmar.
+## Problema
 
-## Mudancas
+O filtro progressivo funciona corretamente (aba Excelente so mostra tipo A para perfil Artistico). Porem, as carreiras A que aparecem nao sao as mais "obvias" porque:
 
-### 1. Instalar dependencia para leitura de Excel
-- Adicionar `xlsx` (SheetJS) para parsear .xlsx, .xls e .csv em um unico pacote.
+1. A normalizacao atribui subtipos A aleatorios (via hash) a d1/d2
+2. Com 10 subtipos A possiveis e o usuario tendo pontos em apenas 3-5 deles, a maioria das carreiras A nao atinge 4/4
+3. As poucas que atingem 4/4 sao as que "tiveram sorte" no hash, nao necessariamente as mais representativas
 
-### 2. Novo componente: `src/components/ImportCareersModal.tsx`
-Modal com toda a logica de importacao:
+Exemplo: Designer Grafico pode receber MUDANCA e IDENTIDADE (pelo hash), enquanto o usuario tem pontos em CRIATIVIDADE e EXPRESSAO. Resultado: Designer Grafico fica em Bom ou Atencao, e uma carreira menos obvia aparece em Excelente.
 
-- **Input de arquivo**: aceita `.xlsx,.xls,.csv`
-- **Parsing**: usa SheetJS para ler a primeira aba/tabela do arquivo
-- **Deteccao de separador CSV**: testa `;` e `,` automaticamente
-- **Validacao de colunas**: exige exatamente `Profissao`, `Descricao`, `Subtipo Dominante 1`, `Subtipo Dominante 2`, `Subtipo Secundario 1`, `Subtipo Secundario 2`. Se faltar, mostra erro listando as colunas faltantes.
-- **Validacao por linha**:
-  - Profissao e Descricao nao vazias
-  - 4 subtipos preenchidos
-  - Sem subtipo duplicado na mesma linha
-  - Subtipo deve existir no `subtypeTypeMap`
-  - Linhas invalidas sao listadas com mensagem de erro
-- **Preview**: mostra tabela com as 5 primeiras linhas + total de registros
-- **Botoes**: Confirmar (substitui base) / Cancelar (fecha modal)
-- **Campos opcionais**: `Ponto Forte` e `Ponto Fraco` (strings livres, podem vir vazias)
+## Solucao: Selecao por tipo primeiro, match depois
 
-### 3. Novo metodo no hook `useAdminData.ts`
-Adicionar `replaceCareers(newCareers: CareerDetail[])`:
-- Substitui 100% do array de carreiras
-- Salva no localStorage
-- Atualiza o state, forcando recalculo de toda UI dependente
+Mudar a logica das abas para que representem **nivel de afinidade com o tipo**, nao nivel de match bruto:
 
-### 4. Botao na aba Profissoes (`src/pages/Admin.tsx`)
-- Adicionar botao "Importar Planilha" ao lado do "Resetar" (mesma altura, estilo outline, rounded-full, text-xs)
-- Ao clicar, abre o `ImportCareersModal`
-- Ao confirmar, chama `replaceCareers` e fecha o modal
+- **Excelente**: as 4 melhores carreiras DO TIPO DOMINANTE (ordenadas por matchCount desc, subtypeSum desc)
+- **Bom**: as proximas 4 melhores do tipo dominante + backfill de outros tipos
+- **Atencao**: qualquer tipo, ordenado por relevancia
+- **Refazer**: restantes
+
+Cada card continua exibindo seu badge real (4/4, 3/4, etc.), preservando os criterios. A diferenca e que as abas agora organizam por RELEVANCIA AO PERFIL em vez de match count puro.
 
 ## Detalhes tecnicos
 
-### Mapeamento de colunas para CareerDetail
+### Arquivo modificado
+- `src/components/CareersTab.tsx`
+
+### Mudanca na logica do useMemo
+
+Em vez de agrupar por `getMatchLevel(matchCount)` e depois filtrar por tipo, a nova logica:
+
+1. Calcula matchCount e subtypeSum para TODAS as 600 carreiras (sem mudanca)
+2. Separa em dois grupos: `dominantCareers` (type === dominantType) e `otherCareers`
+3. Ordena cada grupo por matchCount desc, subtypeSum desc, idx asc
+4. Distribui nas abas:
+   - Excelente: top 4 de dominantCareers
+   - Bom: proximas 4 de dominantCareers (posicoes 4-7). Se insuficientes, backfill com top de otherCareers
+   - Atencao: top 4 de otherCareers (ou restantes de dominantCareers se sobraram)
+   - Refazer: proximas 4 de otherCareers
+5. Cada item mantem seu matchCount/level original para exibir no badge do card
+
+### Codigo proposto
 
 ```text
-Coluna da planilha          -> Campo CareerDetail
-Profissao                   -> name
-Descricao                   -> description
-Ponto Forte (opcional)      -> strengths
-Ponto Fraco (opcional)      -> weaknesses
-Subtipo Dominante 1         -> relatedSubtypes[0] (label + type via subtypeTypeMap)
-Subtipo Dominante 2         -> relatedSubtypes[1]
-Subtipo Secundario 1        -> relatedSubtypes[2]
-Subtipo Secundario 2        -> relatedSubtypes[3]
+const dominantCareers = scored
+  .filter(item => item.career.type === dominantType)
+  .sort((a, b) => {
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+    return a.idx - b.idx;
+  });
+
+const otherCareers = scored
+  .filter(item => item.career.type !== dominantType)
+  .sort((a, b) => {
+    if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+    if (b.subtypeSum !== a.subtypeSum) return b.subtypeSum - a.subtypeSum;
+    return a.idx - b.idx;
+  });
+
+// Excelente: top 4 dominant
+grouped['Excelente'] = dominantCareers.slice(0, 4);
+
+// Bom: next 4 dominant, backfill with others
+const bomDominant = dominantCareers.slice(4, 8);
+const bomBackfill = otherCareers.slice(0, 4 - bomDominant.length);
+grouped['Bom'] = [...bomDominant, ...bomBackfill].slice(0, 4);
+
+// Atencao: top others (or remaining dominant)
+const usedOthers = 4 - bomDominant.length;
+grouped['Atencao'] = otherCareers.slice(usedOthers, usedOthers + 4);
+
+// Refazer: next batch
+grouped['Refazer'] = otherCareers.slice(usedOthers + 4, usedOthers + 8);
 ```
 
-O campo `type` (RiasecType) e derivado automaticamente do `Subtipo Dominante 1` via `subtypeTypeMap`.
-
-### Recalculo automatico
-Como `careers` e state do React retornado por `useAdminData`, ao chamar `replaceCareers`:
-- O componente CareersAdmin re-renderiza com a nova lista
-- O quiz (ResultsScreen/CareersTab) usa o mesmo state via props, recalculando matches automaticamente
-- Nenhum cache manual precisa ser invalidado
-
-### Validacao de colunas (logica)
-```text
-const REQUIRED = ['Profissão', 'Descrição', 'Subtipo Dominante 1', 'Subtipo Dominante 2', 'Subtipo Secundário 1', 'Subtipo Secundário 2'];
-const missing = REQUIRED.filter(col => !headers.includes(col));
-if (missing.length > 0) -> erro com lista de faltantes
-```
-
-### Arquivos modificados
-- `src/hooks/useAdminData.ts` — adicionar `replaceCareers`
-- `src/pages/Admin.tsx` — importar modal + botao
-- `src/components/ImportCareersModal.tsx` — novo arquivo (modal completo)
-- `package.json` — adicionar dependencia `xlsx`
+### Impacto esperado
+- Perfil Artistico: Excelente mostra Designer Grafico, Diretor de Arte, Ilustrador, Fotografo (os com maior match DENTRO do tipo A)
+- Os badges nos cards ainda mostram 4/4, 3/4 etc. conforme o match real
+- Bom mostra as proximas carreiras A mais relevantes
+- Atencao/Refazer mostram carreiras de outros tipos, refletindo menor afinidade
+- Os criterios 4/4, 3/4, 2/4, 1/4 sao preservados como indicadores visuais nos cards
